@@ -1,56 +1,162 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Activity } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 
 const Header = () => {
-  const [isDark, setIsDark] = useState(true);
+  const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('light', savedTheme === 'light');
+    }
+  }, []);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('light');
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('light', newTheme === 'light');
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <header className="border-b border-border bg-gradient-card backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Activity className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            StockSight
-          </span>
+    <header className="fixed top-0 left-0 right-0 z-50 floating-header">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div 
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => navigate('/')}
+          >
+            <div className="relative">
+              <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-foreground font-bold text-lg leading-none">Stonks</span>
+              <span className="text-muted-foreground text-xs leading-none">AI Intelligence</span>
+            </div>
         </div>
         
-        <nav className="hidden md:flex items-center space-x-8">
-          <a href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            <a 
+              href="/" 
+              className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
+            >
             Home
           </a>
-          <a href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
+            <a 
+              href="/all-stocks" 
+              className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
+            >
+              All Stocks
+            </a>
+            <a 
+              href="/dashboard" 
+              className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
+            >
             Dashboard
           </a>
-          <a href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
+            <a 
+              href="/how-it-works" 
+              className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
+            >
             How It Works
-          </a>
-          <a href="/about" className="text-muted-foreground hover:text-primary transition-colors">
-            About
           </a>
         </nav>
 
-        <div className="flex items-center gap-4">
+          {/* Desktop Buttons */}
+          <div className="hidden md:flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="text-muted-foreground hover:text-foreground"
+              className="w-10 h-10 rounded-2xl hover:bg-accent transition-all duration-300"
           >
-            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          <Button variant="outline" className="hidden sm:flex">
+            <Button variant="outline" className="btn-matte-outline">
             Sign In
           </Button>
-          <Button className="bg-gradient-primary hover:opacity-90">
+            <Button className="btn-matte">
             Get Started
           </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-2xl hover:bg-accent transition-all duration-300"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMobileMenu}
+              className="w-10 h-10 rounded-2xl hover:bg-accent transition-all duration-300"
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-border/30 animate-fade-in">
+            <nav className="flex flex-col gap-4">
+              <a 
+                href="/" 
+                className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a 
+                href="/all-stocks" 
+                className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                All Stocks
+              </a>
+              <a 
+                href="/dashboard" 
+                className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Dashboard
+              </a>
+              <a 
+                href="/how-it-works" 
+                className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                How It Works
+              </a>
+            </nav>
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border/30">
+              <Button variant="outline" className="btn-matte-outline w-full">
+                Sign In
+              </Button>
+              <Button className="btn-matte w-full">
+                Get Started
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -1,6 +1,8 @@
-# Welcome to your Lovable project
+# Stonks - AI-Powered Stock Analysis Platform
 
 ## Project info
+
+**Stonks** is a revolutionary AI-powered stock analysis platform that provides real-time market data, advanced charting, and intelligent predictions to help investors make informed decisions.
 
 **URL**: https://lovable.dev/projects/46d01fc6-919d-46f4-9006-499d7c5bcd37
 
@@ -54,11 +56,13 @@ npm run dev
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Frontend**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and building
+- **UI Framework**: shadcn/ui components with Tailwind CSS
+- **Data Fetching**: React Query for efficient API calls
+- **Charts**: Recharts for interactive data visualization
+- **API**: Finnhub for real-time stock data
+- **Styling**: Custom CSS animations and gradients
 
 ## How can I deploy this project?
 

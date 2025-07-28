@@ -1,29 +1,46 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
+import Index from "@/pages/Index";
+import AllStocks from "@/pages/AllStocks";
+import Dashboard from "@/pages/Dashboard";
+import NotFound from "@/pages/NotFound";
+import HowItWorks from "@/pages/HowItWorks";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
+    },
+  },
+});
 
-const App = () => (
+function App() {
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+        <Router>
+          <div className="min-h-screen bg-background">
+            <Header />
+            <div className="pt-16">
         <Routes>
           <Route path="/" element={<Index />} />
+                <Route path="/all-stocks" element={<AllStocks />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+            </div>
+            <Toaster />
+          </div>
+        </Router>
     </TooltipProvider>
   </QueryClientProvider>
 );
+}
 
 export default App;
