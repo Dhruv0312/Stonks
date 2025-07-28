@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Sun, Moon } from "lucide-react";
 
@@ -49,30 +49,30 @@ const Header = () => {
         
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a 
-              href="/" 
+            <Link 
+              to="/" 
               className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
             >
             Home
-          </a>
-            <a 
-              href="/all-stocks" 
+          </Link>
+            <Link 
+              to="/all-stocks" 
               className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
             >
               All Stocks
-            </a>
-            <a 
-              href="/dashboard" 
+            </Link>
+            <Link 
+              to="/dashboard" 
               className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
             >
             Dashboard
-          </a>
-            <a 
-              href="/how-it-works" 
+          </Link>
+            <Link 
+              to="/how-it-works" 
               className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
             >
             How It Works
-          </a>
+          </Link>
         </nav>
 
           {/* Desktop Buttons */}
@@ -118,34 +118,34 @@ const Header = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/30 animate-fade-in">
             <nav className="flex flex-col gap-4">
-              <a 
-                href="/" 
+              <Link 
+                to="/" 
                 className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
-              </a>
-              <a 
-                href="/all-stocks" 
+              </Link>
+              <Link 
+                to="/all-stocks" 
                 className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 All Stocks
-              </a>
-              <a 
-                href="/dashboard" 
+              </Link>
+              <Link 
+                to="/dashboard" 
                 className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Dashboard
-              </a>
-              <a 
-                href="/how-it-works" 
+              </Link>
+              <Link 
+                to="/how-it-works" 
                 className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 How It Works
-              </a>
+              </Link>
             </nav>
             <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border/30">
               <Button variant="outline" className="btn-matte-outline w-full">
