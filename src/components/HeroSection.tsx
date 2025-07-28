@@ -4,26 +4,28 @@ import StockSearchCard from "./StockSearchCard";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero">
-      {/* Background Elements */}
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden">
+      {/* Enhanced Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-primary-glow/10 rounded-full blur-2xl" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-primary/20 to-secondary-purple/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-accent/15 to-accent-pink/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-gradient-to-r from-accent-orange/20 to-warning/20 rounded-full blur-2xl animate-float" />
+        <div className="absolute top-1/6 right-1/6 w-48 h-48 bg-gradient-to-r from-secondary-purple/10 to-accent-cyan/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/6 left-1/6 w-40 h-40 bg-gradient-to-r from-success/15 to-accent/15 rounded-full blur-2xl animate-float" />
       </div>
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="text-center space-y-8 mb-16">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-            <Brain className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">AI-Powered Market Intelligence</span>
+          {/* Enhanced Badge */}
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-primary/10 to-secondary-purple/10 border border-primary/30 shadow-glow backdrop-blur-sm">
+            <Brain className="h-5 w-5 text-gradient-primary animate-pulse" />
+            <span className="text-sm font-medium text-gradient-primary">AI-Powered Market Intelligence</span>
           </div>
 
-          {/* Main Headline */}
-          <div className="space-y-4">
+          {/* Enhanced Main Headline */}
+          <div className="space-y-6">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-gradient-rainbow animate-shimmer bg-[length:200%_100%]">
                 Predict Tomorrow's
               </span>
               <br />
@@ -36,63 +38,78 @@ const HeroSection = () => {
             </p>
           </div>
 
-          {/* Stats */}
+          {/* Enhanced Stats with Colors */}
           <div className="flex flex-wrap justify-center gap-8 md:gap-12 text-center">
-            <div className="space-y-1">
-              <div className="text-2xl md:text-3xl font-bold text-primary">95%</div>
+            <div className="space-y-2 p-4 rounded-2xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 shadow-soft">
+              <div className="text-2xl md:text-3xl font-bold text-gradient-primary">95%</div>
               <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2 p-4 rounded-2xl bg-gradient-to-r from-accent/5 to-accent/10 border border-accent/20 shadow-success">
               <div className="text-2xl md:text-3xl font-bold text-accent">10K+</div>
               <div className="text-sm text-muted-foreground">Stocks Analyzed</div>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2 p-4 rounded-2xl bg-gradient-to-r from-success/5 to-success/10 border border-success/20 shadow-success">
               <div className="text-2xl md:text-3xl font-bold text-success">24/7</div>
               <div className="text-sm text-muted-foreground">Market Monitoring</div>
             </div>
           </div>
         </div>
 
-        {/* Search Card */}
+        {/* Enhanced Search Card */}
         <div className="mb-16">
           <StockSearchCard />
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          <div className="p-6 rounded-xl bg-gradient-card border border-border/50 shadow-soft">
-            <TrendingUp className="h-8 w-8 text-success mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Smart Predictions</h3>
-            <p className="text-muted-foreground text-sm">
+        {/* Enhanced Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="card-hover p-8 rounded-2xl bg-gradient-card border border-border/30 shadow-card backdrop-blur-sm">
+            <div className="relative mb-6">
+              <TrendingUp className="h-10 w-10 text-success mb-4 animate-float" />
+              <div className="absolute inset-0 h-10 w-10 text-success/20 blur-sm">
+                <TrendingUp className="h-10 w-10" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-gradient-primary">Smart Predictions</h3>
+            <p className="text-muted-foreground">
               Advanced LSTM models analyze market patterns to predict stock movements with high confidence.
             </p>
           </div>
           
-          <div className="p-6 rounded-xl bg-gradient-card border border-border/50 shadow-soft">
-            <BarChart className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Real-Time Data</h3>
-            <p className="text-muted-foreground text-sm">
+          <div className="card-hover p-8 rounded-2xl bg-gradient-card border border-border/30 shadow-card backdrop-blur-sm">
+            <div className="relative mb-6">
+              <BarChart className="h-10 w-10 text-secondary-purple mb-4 animate-pulse" />
+              <div className="absolute inset-0 h-10 w-10 text-secondary-purple/20 blur-sm">
+                <BarChart className="h-10 w-10" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-gradient-primary">Real-Time Data</h3>
+            <p className="text-muted-foreground">
               Live market data and interactive charts with technical indicators for comprehensive analysis.
             </p>
           </div>
           
-          <div className="p-6 rounded-xl bg-gradient-card border border-border/50 shadow-soft">
-            <Brain className="h-8 w-8 text-accent mb-4" />
-            <h3 className="text-lg font-semibold mb-2">AI Insights</h3>
-            <p className="text-muted-foreground text-sm">
+          <div className="card-hover p-8 rounded-2xl bg-gradient-card border border-border/30 shadow-card backdrop-blur-sm">
+            <div className="relative mb-6">
+              <Brain className="h-10 w-10 text-accent-orange mb-4 animate-pulse-glow" />
+              <div className="absolute inset-0 h-10 w-10 text-accent-orange/20 blur-sm">
+                <Brain className="h-10 w-10" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-gradient-primary">AI Insights</h3>
+            <p className="text-muted-foreground">
               Get detailed reasoning behind predictions with sentiment analysis and market indicators.
             </p>
           </div>
         </div>
 
-        {/* CTA */}
+        {/* Enhanced CTA */}
         <div className="text-center mt-16">
           <Button 
             size="lg" 
-            className="bg-gradient-primary hover:opacity-90 text-lg px-8 py-6 h-auto shadow-glow"
+            className="bg-gradient-rainbow hover:bg-gradient-primary text-lg px-10 py-8 h-auto shadow-glow hover:shadow-purple rounded-2xl transition-all duration-300 hover:scale-105 animate-pulse-glow"
           >
             Start Predicting Now
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-2 h-6 w-6" />
           </Button>
         </div>
       </div>

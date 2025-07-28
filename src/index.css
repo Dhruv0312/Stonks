@@ -2,15 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* StockSight Design System - Professional Fintech Theme */
+/* StockSight Design System - Enhanced Beautiful Fintech Theme */
 
 @layer base {
   :root {
-    /* Core backgrounds */
+    /* Core backgrounds with enhanced gradients */
     --background: 219 28% 12%;
     --foreground: 213 31% 91%;
 
-    /* Card system */
+    /* Card system with beautiful gradients */
     --card: 217 33% 17%;
     --card-foreground: 213 31% 91%;
 
@@ -18,30 +18,40 @@
     --popover: 217 33% 17%;
     --popover-foreground: 213 31% 91%;
 
-    /* Brand colors - Professional blue palette */
+    /* Enhanced brand colors - Vibrant blue palette */
     --primary: 210 100% 56%;
     --primary-foreground: 219 28% 12%;
     --primary-glow: 210 100% 70%;
+    --primary-light: 210 100% 65%;
+    --primary-dark: 210 100% 45%;
 
-    /* Secondary system */
+    /* Secondary system with purple accents */
     --secondary: 216 34% 22%;
     --secondary-foreground: 213 31% 91%;
+    --secondary-purple: 270 91% 65%;
+    --secondary-purple-light: 270 91% 75%;
 
     /* Muted elements */
     --muted: 215 25% 25%;
     --muted-foreground: 217 10% 64%;
 
-    /* Accent for highlights */
+    /* Enhanced accent colors */
     --accent: 158 64% 52%;
     --accent-foreground: 219 28% 12%;
+    --accent-orange: 25 95% 53%;
+    --accent-pink: 330 85% 60%;
+    --accent-cyan: 190 95% 55%;
 
-    /* Status colors */
+    /* Enhanced status colors */
     --success: 158 64% 52%;
     --success-foreground: 219 28% 12%;
+    --success-light: 158 64% 62%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 213 31% 91%;
+    --destructive-light: 0 84% 70%;
     --warning: 43 96% 56%;
     --warning-foreground: 219 28% 12%;
+    --warning-light: 43 96% 66%;
 
     /* Interface elements */
     --border: 215 25% 25%;
@@ -54,15 +64,22 @@
     --chart-positive: 158 64% 52%;
     --chart-negative: 0 84% 60%;
     
-    /* Gradients for modern look */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 100% 70%));
-    --gradient-card: linear-gradient(145deg, hsl(217 33% 17%), hsl(217 33% 19%));
-    --gradient-hero: linear-gradient(135deg, hsl(219 28% 12%), hsl(217 33% 17%));
+    /* Enhanced gradients for modern look */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 100% 70%), hsl(270 91% 65%));
+    --gradient-secondary: linear-gradient(135deg, hsl(270 91% 65%), hsl(330 85% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(158 64% 52%), hsl(158 64% 62%));
+    --gradient-card: linear-gradient(145deg, hsl(217 33% 17%), hsl(217 33% 19%), hsl(216 34% 20%));
+    --gradient-hero: linear-gradient(135deg, hsl(219 28% 12%), hsl(217 33% 17%), hsl(216 34% 20%));
+    --gradient-accent: linear-gradient(135deg, hsl(25 95% 53%), hsl(43 96% 56%));
+    --gradient-rainbow: linear-gradient(135deg, hsl(210 100% 56%), hsl(270 91% 65%), hsl(330 85% 60%), hsl(25 95% 53%));
     
-    /* Shadows and effects */
-    --shadow-soft: 0 4px 20px -4px hsl(210 100% 56% / 0.1);
-    --shadow-glow: 0 0 40px hsl(210 100% 56% / 0.15);
-    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.3);
+    /* Enhanced shadows and effects */
+    --shadow-soft: 0 4px 20px -4px hsl(210 100% 56% / 0.15);
+    --shadow-glow: 0 0 40px hsl(210 100% 56% / 0.2);
+    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.4);
+    --shadow-success: 0 0 30px hsl(158 64% 52% / 0.3);
+    --shadow-accent: 0 0 30px hsl(25 95% 53% / 0.3);
+    --shadow-purple: 0 0 30px hsl(270 91% 65% / 0.3);
 
     /* Typography scale */
     --text-xs: 0.75rem;
@@ -74,20 +91,24 @@
     --text-3xl: 1.875rem;
     --text-4xl: 2.25rem;
 
-    --radius: 0.75rem;
+    /* Enhanced border radius for more rounded design */
+    --radius: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
   }
 
   .light {
-    /* Light mode overrides */
+    /* Light mode overrides with enhanced colors */
     --background: 213 31% 97%;
     --foreground: 219 28% 12%;
     --card: 0 0% 100%;
     --card-foreground: 219 28% 12%;
     --chart-bg: 213 31% 95%;
     --chart-grid: 213 31% 88%;
-    --gradient-hero: linear-gradient(135deg, hsl(213 31% 97%), hsl(213 31% 95%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(213 31% 98%));
-    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.1);
+    --gradient-hero: linear-gradient(135deg, hsl(213 31% 97%), hsl(213 31% 95%), hsl(210 100% 98%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(213 31% 98%), hsl(210 100% 99%));
+    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.15);
+    --shadow-glow: 0 0 40px hsl(210 100% 56% / 0.1);
   }
 }
 
@@ -98,5 +119,79 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+}
+
+@layer components {
+  /* Enhanced button animations */
+  .btn-glow {
+    @apply transition-all duration-300 hover:shadow-glow;
+  }
+
+  .btn-success-glow {
+    @apply transition-all duration-300 hover:shadow-success;
+  }
+
+  .btn-accent-glow {
+    @apply transition-all duration-300 hover:shadow-accent;
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-glow;
+  }
+
+  /* Gradient text effects */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary via-primary-light to-secondary-purple bg-clip-text text-transparent;
+  }
+
+  .text-gradient-rainbow {
+    @apply bg-gradient-to-r from-primary via-secondary-purple to-accent-pink bg-clip-text text-transparent;
+  }
+
+  /* Enhanced animations */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    from {
+      box-shadow: 0 0 20px hsl(210 100% 56% / 0.3);
+    }
+    to {
+      box-shadow: 0 0 40px hsl(210 100% 56% / 0.6);
+    }
+  }
+
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }
