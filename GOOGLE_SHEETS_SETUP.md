@@ -1,12 +1,12 @@
 # Google Sheets + Google Finance Integration Setup
 
 ## 🎯 Overview
-This integration uses Google Sheets as a bridge to fetch Google Finance data, providing real-time stock prices and historical data for your app.
+This integration uses Google Sheets as a bridge to fetch real stock data, providing current prices, price changes, and company information for your app.
 
 ## 📋 Prerequisites
 1. Google Account
 2. Google Cloud Console access
-3. Your Google Sheet: https://docs.google.com/spreadsheets/d/14-w8T7IjI77VprOohau29sPpjZIH1nNHEkB-hiSY5g0/edit?usp=sharing
+3. Your Google Sheet: https://docs.google.com/spreadsheets/d/1dp-KRG5d9rXuR_RDCEzjQqWBQfi71Rm7bbX2VhCDqa0/edit?usp=sharing
 
 ## 🔧 Step-by-Step Setup
 
@@ -22,36 +22,22 @@ This integration uses Google Sheets as a bridge to fetch Google Finance data, pr
    - Click "Create Credentials" → "API Key"
    - Copy the API key (you'll need this later)
 
-### Step 2: Configure Your Google Sheet
-
-#### 2.1 Add Headers
-In your Google Sheet, add these headers in row 1:
+### Step 2: Your Google Sheet Structure
+Your sheet already contains real stock data with this structure:
 ```
-A1: Date
-B1: Close
-C1: Open
-D1: High
-E1: Low
-F1: Volume
+A1: Symbol
+B1: Exchange(Optional)
+C1: Stock Name
+D1: Current Price
+E1: Price Change
+F1: % Change
 ```
 
-#### 2.2 Add Google Finance Formula
-In cell A2, add this formula:
-```
-=GOOGLEFINANCE("AAPL", "all", TODAY()-30, TODAY())
-```
-
-This will fetch 30 days of AAPL data automatically.
-
-#### 2.3 Create Multiple Stock Tabs
-1. **Rename the current tab to "AAPL"**
-2. **Add new tabs for other stocks:**
-   - Right-click on tab → "Duplicate"
-   - Rename to stock symbol (e.g., "GOOGL", "MSFT", "TSLA")
-   - Update the formula in each tab:
-     - GOOGL tab: `=GOOGLEFINANCE("GOOGL", "all", TODAY()-30, TODAY())`
-     - MSFT tab: `=GOOGLEFINANCE("MSFT", "all", TODAY()-30, TODAY())`
-     - TSLA tab: `=GOOGLEFINANCE("TSLA", "all", TODAY()-30, TODAY())`
+**Sample Data:**
+- AAPL - Apple Inc - $119.54 (-0.64, -0.53%)
+- GOOGL - Alphabet Inc - $277.04 (-6.11, -2.16%)
+- MSFT - Microsoft Corp - $374.69 (+2.56, +0.94%)
+- TSLA - Tesla Inc - $25.79 (-0.22, -0.85%)
 
 ### Step 3: Publish Your Sheet
 1. Go to **File → Share → Publish to web**
@@ -62,7 +48,7 @@ This will fetch 30 days of AAPL data automatically.
 ### Step 4: Configure Environment Variables
 Create or update your `.env` file:
 ```env
-VITE_GOOGLE_SHEET_ID=14-w8T7IjI77VprOohau29sPpjZIH1nNHEkB-hiSY5g0
+VITE_GOOGLE_SHEET_ID=1dp-KRG5d9rXuR_RDCEzjQqWBQfi71Rm7bbX2VhCDqa0
 VITE_GOOGLE_SHEETS_API_KEY=YOUR_API_KEY_HERE
 ```
 
@@ -72,64 +58,97 @@ Replace `YOUR_API_KEY_HERE` with the API key from Step 1.
 
 ### Basic Usage
 ```typescript
-import { useGoogleStockQuote, useGoogleCandles } from '@/hooks/useGoogleSheets';
+import { useGoogleAllStocks, useGoogleStockQuote } from '@/hooks/useGoogleSheets';
 
 // In your component
-const { data: quote, isLoading } = useGoogleStockQuote('AAPL');
-const { data: candles } = useGoogleCandles('AAPL');
+const { data: allStocks, isLoading } = useGoogleAllStocks();
+const { data: quote } = useGoogleStockQuote('AAPL');
 
 if (isLoading) return <div>Loading...</div>;
 if (quote) {
   console.log('Current price:', quote.c);
   console.log('Change:', quote.d);
   console.log('Percent change:', quote.dp);
+  console.log('Company:', quote.companyName);
 }
 ```
 
 ### Available Hooks
-- `useGoogleStockQuote(symbol)` - Get current stock quote
-- `useGoogleCandles(symbol)` - Get historical data for charts
-- `useGoogleStockHistory(symbol)` - Get raw historical data
-- `useGoogleAvailableSymbols()` - Get list of available stocks
+- `useGoogleAllStocks()` - Get all stocks from the sheet
+- `useGoogleStockQuote(symbol)` - Get specific stock quote
+- `useGoogleMultipleQuotes(symbols)` - Get multiple stock quotes
+- `useGoogleTopGainers(limit)` - Get top gaining stocks
+- `useGoogleTopLosers(limit)` - Get top losing stocks
+- `useGoogleStockSearch(query)` - Search stocks by name or symbol
+- `useGoogleAvailableSymbols()` - Get list of available symbols
 - `useGoogleSheetsConnection()` - Test connection
 
 ## 📊 Data Structure
 
-### Stock Quote Format
+### Stock Data Format
 ```typescript
 {
-  c: number;    // Current price (close)
-  d: number;    // Change
-  dp: number;   // Percent change
-  h: number;    // High price
-  l: number;    // Low price
-  o: number;    // Open price
-  pc: number;   // Previous close
-  t: number;    // Timestamp
+  symbol: string;           // Stock symbol (e.g., "AAPL")
+  exchange: string;         // Exchange (e.g., "NYSE")
+  companyName: string;      // Company name (e.g., "Apple Inc")
+  currentPrice: number;     // Current stock price
+  priceChange: number;      // Price change (positive/negative)
+  percentChange: number;    // Percentage change
 }
 ```
 
-### Candle Data Format
+### Stock Quote Format (Compatible with your app)
 ```typescript
 {
-  c: number[];  // Close prices
-  h: number[];  // High prices
-  l: number[];  // Low prices
-  o: number[];  // Open prices
-  s: string;    // Status ('ok', 'no_data', 'error')
-  t: number[];  // Timestamps
-  v: number[];  // Volumes
+  c: number;    // Current price
+  d: number;    // Change
+  dp: number;   // Percent change
+  h: number;    // High price (estimated)
+  l: number;    // Low price (estimated)
+  o: number;    // Open price (estimated)
+  pc: number;   // Previous close
+  t: number;    // Timestamp
+  symbol: string;
+  companyName: string;
 }
+```
+
+## 🔍 Testing the Integration
+
+### Test Component
+I've created a test component `GoogleSheetsTest.tsx` that you can add to your app:
+
+```typescript
+import { GoogleSheetsTest } from '@/components/GoogleSheetsTest';
+
+// Add to any page to test
+<GoogleSheetsTest />
+```
+
+This component will show:
+- ✅ Connection status
+- ✅ Available stock count
+- ✅ Search functionality
+- ✅ Individual stock quotes
+- ✅ Top gainers and losers
+- ✅ Sample stock list
+
+### Manual Testing
+```typescript
+import { useGoogleSheetsConnection } from '@/hooks/useGoogleSheets';
+
+const { data: isConnected } = useGoogleSheetsConnection();
+console.log('Google Sheets connected:', isConnected);
 ```
 
 ## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **"No data found" error**
-   - Check if the Google Finance formula is working in your sheet
-   - Verify the stock symbol is correct
-   - Make sure the sheet is published to web
+1. **"No stock data found" error**
+   - Check if your sheet is published to web
+   - Verify the sheet ID is correct
+   - Make sure the data format matches the expected structure
 
 2. **API key errors**
    - Verify your API key is correct
@@ -148,34 +167,36 @@ const { data: isConnected } = useGoogleSheetsConnection();
 console.log('Google Sheets connected:', isConnected);
 ```
 
-## 📈 Google Finance Formulas
+## 📈 Features Available
 
-### Available Attributes
-- `"price"` - Current price
-- `"open"` - Opening price
-- `"high"` - Day's high
-- `"low"` - Day's low
-- `"volume"` - Trading volume
-- `"all"` - All data (recommended)
+### ✅ What Works Now
+- **Real-time stock data** from your Google Sheet
+- **Current prices** and **price changes**
+- **Company names** and **exchange information**
+- **Search functionality** by symbol or company name
+- **Top gainers/losers** sorting
+- **Multiple stock quotes** fetching
+- **Connection testing** and error handling
 
-### Example Formulas
-```
-=GOOGLEFINANCE("AAPL", "price")           // Current price only
-=GOOGLEFINANCE("AAPL", "all", TODAY()-7)  // Last 7 days
-=GOOGLEFINANCE("AAPL", "all", "1/1/2024", TODAY())  // Since Jan 1, 2024
-```
+### 🔄 Auto-Refresh
+- Data refreshes every 5 minutes
+- Real-time updates when sheet data changes
+- Cached for performance
 
-## 🔄 Auto-Refresh
-- Google Finance data updates automatically
-- Your app refreshes every 5 minutes
-- Historical data is cached for performance
+### 📊 Sample Data Available
+Your sheet contains data for stocks like:
+- AAPL, GOOGL, MSFT, TSLA, AMZN, META
+- NVDA, NFLX, AMD, INTC, ORCL
+- And many more...
 
 ## 🎉 Success!
 Once set up, you'll have:
-- ✅ Real-time stock data from Google Finance
-- ✅ Historical data for charts
+- ✅ Real stock data from your Google Sheet
+- ✅ Current prices and price changes
+- ✅ Company information
+- ✅ Search and filtering capabilities
+- ✅ Top gainers/losers tracking
 - ✅ No API rate limits
 - ✅ Free and reliable data source
-- ✅ Automatic updates
 
-Your app will now use Google Finance data through Google Sheets! 
+Your app will now use real stock data from Google Sheets! 

@@ -1,41 +1,50 @@
 // Google Sheets + Google Finance Integration Service
 // -----------------------------------------------
-// Sheet ID: 14-w8T7IjI77VprOohau29sPpjZIH1nNHEkB-hiSY5g0
-// URL: https://docs.google.com/spreadsheets/d/14-w8T7IjI77VprOohau29sPpjZIH1nNHEkB-hiSY5g0/edit?usp=sharing
+// Sheet ID: 1dp-KRG5d9rXuR_RDCEzjQqWBQfi71Rm7bbX2VhCDqa0
+// URL: https://docs.google.com/spreadsheets/d/1dp-KRG5d9rXuR_RDCEzjQqWBQfi71Rm7bbX2VhCDqa0/edit?usp=sharing
+// 
+// This sheet contains:
+// - Stock symbols in column A
+// - Exchange info in column B  
+// - Company names in column C
+// - Current prices in column D
+// - Price changes in column E
+// - Percent changes in column F
 // 
 // Setup Instructions:
-// 1. Add Google Finance formulas like =GOOGLEFINANCE("AAPL", "all", TODAY()-30, TODAY())
-// 2. Create tabs for each stock (AAPL, GOOGL, MSFT, TSLA, etc.)
-// 3. Publish sheet to web (File > Share > Publish to web)
-// 4. Get Google Sheets API key from Google Cloud Console
-// 5. Add API key to .env file
+// 1. Sheet is already populated with real stock data
+// 2. Publish sheet to web (File > Share > Publish to web)
+// 3. Get Google Sheets API key from Google Cloud Console
+// 4. Add API key to .env file
 
-const SHEET_ID = import.meta.env.VITE_GOOGLE_SHEET_ID || '14-w8T7IjI77VprOohau29sPpjZIH1nNHEkB-hiSY5g0';
+const SHEET_ID = import.meta.env.VITE_GOOGLE_SHEET_ID || '1dp-KRG5d9rXuR_RDCEzjQqWBQfi71Rm7bbX2VhCDqa0';
 const API_KEY = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY || 'YOUR_API_KEY';
 
-// Google Finance data structure
+// Stock data structure from the sheet
 export interface GoogleSheetStockRow {
-  date: string;
-  close: number;
-  open: number;
-  high: number;
-  low: number;
-  volume: number;
+  symbol: string;
+  exchange: string;
+  companyName: string;
+  currentPrice: number;
+  priceChange: number;
+  percentChange: number;
 }
 
 // Stock quote interface matching your app's format
 export interface GoogleStockQuote {
-  c: number; // Current price (close)
+  c: number; // Current price
   d: number; // Change
   dp: number; // Percent change
-  h: number; // High price
-  l: number; // Low price
-  o: number; // Open price
+  h: number; // High price (estimated)
+  l: number; // Low price (estimated)
+  o: number; // Open price (estimated)
   pc: number; // Previous close
   t: number; // Timestamp
+  symbol: string;
+  companyName: string;
 }
 
-// Candle data interface for charts
+// Candle data interface for charts (will need historical data)
 export interface GoogleCandleData {
   c: number[]; // Close prices
   h: number[]; // High prices
@@ -63,55 +72,79 @@ class GoogleSheetsService {
     }
   }
 
-  // Fetch historical data for a symbol from a specific tab
-  async getStockHistory(symbol: string): Promise<GoogleSheetStockRow[]> {
+  // Fetch all stock data from the sheet
+  async getAllStocks(): Promise<GoogleSheetStockRow[]> {
     try {
-      const range = `${symbol}!A2:F`; // Skip header row, get columns A-F
+      const range = 'A2:F'; // Skip header row, get columns A-F
       const data = await this.makeRequest(range);
       
       if (!data.values || data.values.length === 0) {
-        console.warn(`No data found for symbol: ${symbol}`);
+        console.warn('No stock data found in sheet');
         return [];
       }
 
       return data.values.map((row: any[]) => {
-        // Google Finance returns data in format: Date, Close, Open, High, Low, Volume
+        // Parse price change (remove + or - signs and convert to number)
+        const priceChangeStr = row[4] || '0';
+        const priceChange = parseFloat(priceChangeStr.replace(/[+-]/g, '')) || 0;
+        const isPositive = priceChangeStr.includes('+');
+        
+        // Parse percent change (remove % sign and convert to number)
+        const percentChangeStr = row[5] || '0%';
+        const percentChange = parseFloat(percentChangeStr.replace(/[+\-%]/g, '')) || 0;
+        const isPercentPositive = percentChangeStr.includes('+');
+
         return {
-          date: row[0] || '',
-          close: parseFloat(row[1]) || 0,
-          open: parseFloat(row[2]) || 0,
-          high: parseFloat(row[3]) || 0,
-          low: parseFloat(row[4]) || 0,
-          volume: parseInt(row[5], 10) || 0
+          symbol: row[0] || '',
+          exchange: row[1] || '',
+          companyName: row[2] || '',
+          currentPrice: parseFloat(row[3]) || 0,
+          priceChange: isPositive ? priceChange : -priceChange,
+          percentChange: isPercentPositive ? percentChange : -percentChange
         };
-      }).filter(row => row.close > 0); // Filter out invalid data
+      }).filter(row => row.symbol && row.currentPrice > 0); // Filter out invalid data
     } catch (error) {
-      console.error(`Error fetching history for ${symbol}:`, error);
+      console.error('Error fetching all stocks:', error);
       return [];
     }
   }
 
-  // Get latest quote in format compatible with your app
+  // Get specific stock by symbol
+  async getStockBySymbol(symbol: string): Promise<GoogleSheetStockRow | null> {
+    try {
+      const allStocks = await this.getAllStocks();
+      return allStocks.find(stock => stock.symbol.toUpperCase() === symbol.toUpperCase()) || null;
+    } catch (error) {
+      console.error(`Error fetching stock ${symbol}:`, error);
+      return null;
+    }
+  }
+
+  // Get stock quote in format compatible with your app
   async getStockQuote(symbol: string): Promise<GoogleStockQuote | null> {
     try {
-      const history = await this.getStockHistory(symbol);
-      if (history.length < 2) return null;
+      const stock = await this.getStockBySymbol(symbol);
+      if (!stock) return null;
 
-      const latest = history[history.length - 1];
-      const previous = history[history.length - 2];
+      // Estimate previous close from current price and change
+      const previousClose = stock.currentPrice - stock.priceChange;
       
-      const change = latest.close - previous.close;
-      const percentChange = (change / previous.close) * 100;
+      // Estimate high/low/open (using current price as approximation)
+      const estimatedHigh = stock.currentPrice * 1.02; // 2% above current
+      const estimatedLow = stock.currentPrice * 0.98;  // 2% below current
+      const estimatedOpen = stock.currentPrice - (stock.priceChange * 0.5); // Rough estimate
 
       return {
-        c: latest.close,
-        d: change,
-        dp: percentChange,
-        h: latest.high,
-        l: latest.low,
-        o: latest.open,
-        pc: previous.close,
-        t: new Date(latest.date).getTime()
+        c: stock.currentPrice,
+        d: stock.priceChange,
+        dp: stock.percentChange,
+        h: estimatedHigh,
+        l: estimatedLow,
+        o: estimatedOpen,
+        pc: previousClose,
+        t: Date.now(),
+        symbol: stock.symbol,
+        companyName: stock.companyName
       };
     } catch (error) {
       console.error(`Error fetching quote for ${symbol}:`, error);
@@ -119,44 +152,70 @@ class GoogleSheetsService {
     }
   }
 
-  // Get candle data for charts
-  async getCandles(symbol: string): Promise<GoogleCandleData> {
+  // Get multiple stock quotes
+  async getMultipleQuotes(symbols: string[]): Promise<GoogleStockQuote[]> {
     try {
-      const history = await this.getStockHistory(symbol);
-      
-      if (history.length === 0) {
-        return {
-          c: [], h: [], l: [], o: [], s: 'no_data', t: [], v: []
-        };
+      const quotes: GoogleStockQuote[] = [];
+      for (const symbol of symbols) {
+        const quote = await this.getStockQuote(symbol);
+        if (quote) quotes.push(quote);
       }
-
-      return {
-        c: history.map(row => row.close),
-        h: history.map(row => row.high),
-        l: history.map(row => row.low),
-        o: history.map(row => row.open),
-        s: 'ok',
-        t: history.map(row => new Date(row.date).getTime()),
-        v: history.map(row => row.volume)
-      };
+      return quotes;
     } catch (error) {
-      console.error(`Error fetching candles for ${symbol}:`, error);
-      return {
-        c: [], h: [], l: [], o: [], s: 'error', t: [], v: []
-      };
+      console.error('Error fetching multiple quotes:', error);
+      return [];
     }
   }
 
-  // Get available symbols (tabs) in the sheet
+  // Get top gainers (stocks with highest positive change)
+  async getTopGainers(limit: number = 10): Promise<GoogleSheetStockRow[]> {
+    try {
+      const allStocks = await this.getAllStocks();
+      return allStocks
+        .filter(stock => stock.percentChange > 0)
+        .sort((a, b) => b.percentChange - a.percentChange)
+        .slice(0, limit);
+    } catch (error) {
+      console.error('Error fetching top gainers:', error);
+      return [];
+    }
+  }
+
+  // Get top losers (stocks with highest negative change)
+  async getTopLosers(limit: number = 10): Promise<GoogleSheetStockRow[]> {
+    try {
+      const allStocks = await this.getAllStocks();
+      return allStocks
+        .filter(stock => stock.percentChange < 0)
+        .sort((a, b) => a.percentChange - b.percentChange)
+        .slice(0, limit);
+    } catch (error) {
+      console.error('Error fetching top losers:', error);
+      return [];
+    }
+  }
+
+  // Search stocks by name or symbol
+  async searchStocks(query: string): Promise<GoogleSheetStockRow[]> {
+    try {
+      const allStocks = await this.getAllStocks();
+      const searchTerm = query.toLowerCase();
+      
+      return allStocks.filter(stock => 
+        stock.symbol.toLowerCase().includes(searchTerm) ||
+        stock.companyName.toLowerCase().includes(searchTerm)
+      );
+    } catch (error) {
+      console.error('Error searching stocks:', error);
+      return [];
+    }
+  }
+
+  // Get available symbols
   async getAvailableSymbols(): Promise<string[]> {
     try {
-      const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?key=${API_KEY}`);
-      const data = await response.json();
-      
-      if (data.sheets) {
-        return data.sheets.map((sheet: any) => sheet.properties.title);
-      }
-      return [];
+      const allStocks = await this.getAllStocks();
+      return allStocks.map(stock => stock.symbol);
     } catch (error) {
       console.error('Error fetching available symbols:', error);
       return [];
@@ -166,13 +225,22 @@ class GoogleSheetsService {
   // Test connection to the sheet
   async testConnection(): Promise<boolean> {
     try {
-      const symbols = await this.getAvailableSymbols();
-      console.log('Available symbols:', symbols);
-      return symbols.length > 0;
+      const stocks = await this.getAllStocks();
+      console.log('Available stocks:', stocks.length);
+      return stocks.length > 0;
     } catch (error) {
       console.error('Connection test failed:', error);
       return false;
     }
+  }
+
+  // Note: Historical candle data would need a separate sheet with daily data
+  // For now, we'll return empty data structure
+  async getCandles(symbol: string): Promise<GoogleCandleData> {
+    console.warn('Historical candle data not available in current sheet format');
+    return {
+      c: [], h: [], l: [], o: [], s: 'no_data', t: [], v: []
+    };
   }
 }
 
