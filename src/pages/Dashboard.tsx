@@ -302,7 +302,7 @@ const Dashboard = () => {
               <div className="space-y-4">
                 <div>
                   <div className="text-sm text-muted-foreground">Industry</div>
-                  <div className="text-foreground font-medium">{profile.finnhubIndustry}</div>
+                  <div className="text-foreground font-medium">{profile.industry}</div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Country</div>
@@ -556,7 +556,7 @@ const Dashboard = () => {
                 </div>
                     <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Data Source</span>
-                  <span className="text-foreground font-medium">Finnhub API</span>
+                  <span className="text-foreground font-medium">Alpha Vantage API</span>
                     </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Refresh Rate</span>

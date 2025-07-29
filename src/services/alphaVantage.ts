@@ -24,7 +24,7 @@ export interface CompanyProfile {
   ticker: string;
   weburl: string;
   logo: string;
-  finnhubIndustry: string;
+  industry: string;
 }
 
 export interface NewsItem {
@@ -119,7 +119,7 @@ class AlphaVantageService {
       ticker: symbol,
       weburl: data['Website'] || '',
       logo: '', // Alpha Vantage doesn't provide logos
-      finnhubIndustry: data['Industry'] || ''
+      industry: data['Industry'] || ''
     };
   }
 

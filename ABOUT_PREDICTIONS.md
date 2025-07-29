@@ -1,9 +1,8 @@
-# About Predictions
+# AI-Powered Stock Predictions
 
-The prediction feature in this application leverages **real historical stock data** and **advanced technical analysis algorithms** to forecast potential price movements. Here's how it works:
+This application provides AI-powered stock price predictions using:
 
-## Data Collection
-- **Real-time and historical stock data** is fetched from the Finnhub API
+- **Real-time and historical stock data** is fetched from the Alpha Vantage API
 - **30 days of historical data** including open, close, high, low prices, and trading volume
 - **Live market data** for current price analysis
 

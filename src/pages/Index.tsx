@@ -5,18 +5,12 @@ import { useNavigate } from "react-router-dom";
 import HeroSection from "@/components/HeroSection";
 import LiveStockTicker from "@/components/LiveStockTicker";
 import HighConfidenceStocks from "@/components/HighConfidenceStocks";
-import ApiDebug from "@/components/ApiDebug";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Debug Component - Remove this after testing */}
-      <div className="container mx-auto px-4 py-8">
-        <ApiDebug />
-      </div>
-
       {/* Hero Section */}
       <HeroSection />
 
@@ -53,7 +47,7 @@ const Index = () => {
                   <div>
                     <div className="font-medium text-foreground">Historical Prices</div>
                     <div className="text-sm text-muted-foreground">
-                      30+ days of real stock data (open, close, high, low, volume) from Finnhub API
+                      30+ days of real stock data (open, close, high, low, volume) from Alpha Vantage API
                     </div>
                   </div>
                 </div>

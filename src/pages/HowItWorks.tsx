@@ -35,7 +35,7 @@ const HowItWorks = () => {
       details: [
         {
           title: "Historical Price Data",
-          description: "30+ days of real stock prices from Finnhub API",
+          description: "30+ days of real stock prices from Alpha Vantage API",
           features: ["Open, Close, High, Low prices", "Trading volume data", "Real-time updates", "Market hours data"]
         },
         {
