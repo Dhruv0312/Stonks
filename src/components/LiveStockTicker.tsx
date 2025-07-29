@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useStockQuote } from "@/hooks/useFinnhub";
+import { useStockQuote } from "@/hooks/useAlphaVantage";
 import { TrendingUp, TrendingDown, Minus, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
