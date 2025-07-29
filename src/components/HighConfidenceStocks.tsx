@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Target, Zap, ArrowRight, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Zap, ArrowRight, Activity, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useStockQuote } from "@/hooks/useAlphaVantage";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
@@ -43,7 +43,7 @@ const PopularStocks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {popularStocks.map((stock) => {
-            const { data: quote, isLoading } = useStockQuote(stock.symbol);
+            const { data: quote, isLoading, error } = useStockQuote(stock.symbol);
             
             return (
               <Card
@@ -68,14 +68,21 @@ const PopularStocks = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground text-sm">Current Price</span>
                       <div className="flex items-center gap-1">
-                        <span className="text-foreground font-medium">
-                          {isLoading ? 'Loading...' : quote ? formatPrice(quote.c) : '-'}
-                        </span>
+                        {error ? (
+                          <div className="flex items-center gap-1 text-orange-500">
+                            <AlertCircle className="h-4 w-4" />
+                            <span className="text-sm">Rate Limited</span>
+                          </div>
+                        ) : (
+                          <span className="text-foreground font-medium">
+                            {isLoading ? 'Loading...' : quote ? formatPrice(quote.c) : '-'}
+                          </span>
+                        )}
                         <Zap className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>
 
-                    {quote && (
+                    {quote && !error && (
                       <>
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground text-sm">Change</span>
@@ -91,7 +98,7 @@ const PopularStocks = () => {
                         </div>
 
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground text-sm">Volume</span>
+                          <span className="text-muted-foreground text-sm">Last Updated</span>
                           <div className="flex items-center gap-1">
                             <span className="text-foreground text-sm">
                               {quote.t ? new Date(quote.t).toLocaleTimeString() : '-'}

@@ -6,8 +6,10 @@ export const useStockQuote = (symbol: string) => {
     queryKey: ['stockQuote', symbol],
     queryFn: () => alphaVantageService.getStockQuote(symbol),
     enabled: !!symbol,
-    refetchInterval: 300000, // Refetch every 5 minutes
-    staleTime: 240000, // Consider data stale after 4 minutes
+    refetchInterval: false, // Disable auto-refetch to save API calls
+    staleTime: 1000 * 60 * 60 * 24, // Consider data fresh for 24 hours
+    gcTime: 1000 * 60 * 60 * 24 * 7, // Keep in cache for 7 days
+    retry: 1, // Only retry once to save API calls
   });
 };
 
@@ -16,7 +18,9 @@ export const useCompanyProfile = (symbol: string) => {
     queryKey: ['companyProfile', symbol],
     queryFn: () => alphaVantageService.getCompanyProfile(symbol),
     enabled: !!symbol,
-    staleTime: 300000, // Consider data stale after 5 minutes
+    staleTime: 1000 * 60 * 60 * 24 * 7, // Company profiles rarely change
+    gcTime: 1000 * 60 * 60 * 24 * 30, // Keep in cache for 30 days
+    retry: 1,
   });
 };
 
@@ -29,7 +33,9 @@ export const useCompanyNews = (symbol: string) => {
     queryKey: ['companyNews', symbol, from, to],
     queryFn: () => alphaVantageService.getCompanyNews(symbol, from, to),
     enabled: !!symbol,
-    staleTime: 600000, // Consider data stale after 10 minutes
+    staleTime: 1000 * 60 * 60 * 6, // News updates every 6 hours
+    gcTime: 1000 * 60 * 60 * 24, // Keep in cache for 24 hours
+    retry: 1,
   });
 };
 
@@ -37,7 +43,9 @@ export const useMarketNews = (category: string = 'general') => {
   return useQuery({
     queryKey: ['marketNews', category],
     queryFn: () => alphaVantageService.getMarketNews(category),
-    staleTime: 300000, // Consider data stale after 5 minutes
+    staleTime: 1000 * 60 * 60 * 6, // News updates every 6 hours
+    gcTime: 1000 * 60 * 60 * 24, // Keep in cache for 24 hours
+    retry: 1,
   });
 };
 
@@ -46,6 +54,8 @@ export const useStockCandles = (symbol: string, resolution: string = 'D', days: 
     queryKey: ['stockCandles', symbol, resolution, days],
     queryFn: () => alphaVantageService.getCandles(symbol, resolution, days),
     enabled: !!symbol,
-    staleTime: 300000, // Consider data stale after 5 minutes
+    staleTime: 1000 * 60 * 60 * 24, // Historical data doesn't change often
+    gcTime: 1000 * 60 * 60 * 24 * 7, // Keep in cache for 7 days
+    retry: 1,
   });
 }; 

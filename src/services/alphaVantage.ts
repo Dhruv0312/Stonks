@@ -63,7 +63,14 @@ class AlphaVantageService {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      const data = await response.json();
+      
+      // Check for rate limit error
+      if (data['Note'] && data['Note'].includes('API rate limit')) {
+        throw new Error('API rate limit exceeded. Please try again tomorrow or upgrade to premium.');
+      }
+      
+      return data;
     } catch (error) {
       console.error('Alpha Vantage API request failed:', error);
       throw error;
