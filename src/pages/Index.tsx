@@ -5,12 +5,18 @@ import { useNavigate } from "react-router-dom";
 import HeroSection from "@/components/HeroSection";
 import LiveStockTicker from "@/components/LiveStockTicker";
 import HighConfidenceStocks from "@/components/HighConfidenceStocks";
+import ApiDebug from "@/components/ApiDebug";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Debug Component - Remove this after testing */}
+      <div className="container mx-auto px-4 py-8">
+        <ApiDebug />
+      </div>
+
       {/* Hero Section */}
       <HeroSection />
 

@@ -17,7 +17,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useStockQuote, useCompanyProfile, useCompanyNews, useStockCandles } from "@/hooks/useFinnhub";
+import { useStockQuote, useCompanyProfile, useCompanyNews, useStockCandles } from "@/hooks/useAlphaVantage";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
 import { formatPrice, formatChange, formatPercent, formatMarketCap, generatePrediction } from "@/lib/utils";
 import PolygonChart from "@/components/PolygonChart";
