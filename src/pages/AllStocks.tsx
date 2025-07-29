@@ -102,8 +102,6 @@ const stockDatabase = [
   { symbol: "AIV", name: "Apartment Investment and Management Company", sector: "Real Estate", marketCap: 5000000000 }
 ];
 
-
-
 const AllStocks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

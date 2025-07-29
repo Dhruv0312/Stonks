@@ -73,9 +73,9 @@ const Dashboard = () => {
   }
 
   if (error || !quote) {
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-foreground mb-4">Stock Not Found</h1>
             <p className="text-muted-foreground mb-6">Unable to load data for {symbol}</p>
@@ -130,8 +130,8 @@ const Dashboard = () => {
             <div className="text-center p-3 card-matte">
               <div className="text-sm text-muted-foreground">Previous Close</div>
               <div className="text-lg font-bold text-foreground">{formatPrice(quote.pc)}</div>
+            </div>
           </div>
-        </div>
         </CardContent>
       </Card>
             
