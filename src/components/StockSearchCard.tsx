@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, TrendingUp, Zap, Shield, BarChart3, Search, Sparkles, Building2, TrendingDown } from "lucide-react";
+import { Brain, TrendingUp, Zap, Shield, BarChart3, Search, Sparkles, Building2, TrendingDown, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
 
@@ -178,10 +178,10 @@ export const StockSearchCard = () => {
   ];
 
   const features = [
-    { icon: Brain, title: "AI Predictions", description: "Advanced machine learning algorithms" },
-    { icon: TrendingUp, title: "Real-time Data", description: "Live market updates" },
     { icon: BarChart3, title: "Technical Analysis", description: "Professional charting tools" },
+    { icon: TrendingUp, title: "Real-time Data", description: "Live market updates" },
     { icon: Shield, title: "Risk Assessment", description: "Comprehensive risk analysis" },
+    { icon: Activity, title: "Market News", description: "Latest market updates" },
   ];
 
   return (
@@ -196,7 +196,7 @@ export const StockSearchCard = () => {
           </CardTitle>
         </div>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Search by stock symbol or company name to get AI-powered predictions, real-time data, and comprehensive market analysis
+          Search by stock symbol or company name to get real-time data, charts, and comprehensive market analysis
         </p>
       </CardHeader>
 
@@ -259,8 +259,8 @@ export const StockSearchCard = () => {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Brain className="h-5 w-5" />
-                <span>Get AI Analysis</span>
+                <BarChart3 className="h-5 w-5" />
+                <span>Analyze Stock</span>
                 <Zap className="h-5 w-5" />
               </div>
             )}
@@ -314,10 +314,10 @@ export const StockSearchCard = () => {
                 className="p-4 card-matte hover:bg-accent transition-all duration-300"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                                  <div className="flex items-start gap-3">
-                    <div className="icon-rounded">
-                      <feature.icon className="h-4 w-4 text-foreground" />
-                    </div>
+                <div className="flex items-start gap-3">
+                  <div className="icon-rounded">
+                    <feature.icon className="h-4 w-4 text-foreground" />
+                  </div>
                   <div>
                     <h4 className="font-semibold text-foreground text-sm">{feature.title}</h4>
                     <p className="text-xs text-muted-foreground mt-1">{feature.description}</p>

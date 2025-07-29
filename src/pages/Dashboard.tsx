@@ -19,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useStockQuote, useCompanyProfile, useCompanyNews, useStockCandles } from "@/hooks/useAlphaVantage";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
-import { formatPrice, formatChange, formatPercent, formatMarketCap, generatePrediction } from "@/lib/utils";
+import { formatPrice, formatChange, formatPercent, formatMarketCap } from "@/lib/utils";
 import PolygonChart from "@/components/PolygonChart";
 
 const Dashboard = () => {
@@ -134,175 +134,83 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
-            
-      {/* AI Predictions */}
-      {(() => {
-        const prediction = candles && candles.c && candles.c.length >= 30 ? 
-          generatePrediction(symbol, candles, '7D') : null;
-        
-        return (
-          <Card className="card-matte">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                <Target className="h-6 w-6 text-blue-500" />
-                AI Predictions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {prediction ? (
-                <div className="space-y-6">
-                  {/* Prediction Summary */}
-                  <div className="text-center p-6 card-matte">
-                    <div className="text-3xl font-bold text-foreground mb-2">
-                      {formatPrice(prediction.predictedPrice)}
-                    </div>
-                    <div className={`text-lg font-semibold mb-2 ${
-                      prediction.direction === 'up' ? 'text-green-500' : 
-                      prediction.direction === 'down' ? 'text-red-500' : 'text-muted-foreground'
-                    }`}>
-                      {prediction.direction === 'up' ? '↗️ Bullish' : 
-                       prediction.direction === 'down' ? '↘️ Bearish' : '→ Neutral'} 
-                      ({prediction.timeframe})
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Confidence: {prediction.confidence}%
-                    </div>
-                  </div>
 
-                  {/* Technical Indicators */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 card-matte">
-                      <div className="icon-rounded mx-auto mb-2">
-                        <Target className="h-6 w-6 text-blue-500" />
-                      </div>
-                      <div className="text-lg font-bold text-foreground">{prediction.confidence}%</div>
-                      <div className="text-xs text-muted-foreground">Confidence</div>
-                    </div>
-                    <div className="text-center p-4 card-matte">
-                      <div className="icon-rounded mx-auto mb-2">
-                        <Zap className="h-6 w-6 text-yellow-500" />
-                      </div>
-                      <div className="text-lg font-bold text-foreground">{prediction.technicalIndicators.rsi}</div>
-                      <div className="text-xs text-muted-foreground">RSI</div>
-                    </div>
-                    <div className="text-center p-4 card-matte">
-                      <div className="icon-rounded mx-auto mb-2">
-                        <BarChart3 className="h-6 w-6 text-purple-500" />
-                      </div>
-                      <div className="text-lg font-bold text-foreground">{prediction.technicalIndicators.macd}</div>
-                      <div className="text-xs text-muted-foreground">MACD</div>
-                    </div>
-                    <div className="text-center p-4 card-matte">
-                      <div className="icon-rounded mx-auto mb-2">
-                        <Activity className="h-6 w-6 text-green-500" />
-                      </div>
-                      <div className="text-lg font-bold text-foreground">{prediction.technicalIndicators.momentum}%</div>
-                      <div className="text-xs text-muted-foreground">Momentum</div>
-                    </div>
-                  </div>
-
-                  {/* Reasoning */}
-                  {prediction.reasoning.length > 0 && (
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-foreground">Analysis Reasoning:</h4>
-                      <div className="space-y-2">
-                        {prediction.reasoning.map((reason, index) => (
-                          <div key={index} className="flex items-start gap-2 p-3 card-matte">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-sm text-foreground">{reason}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="text-muted-foreground mb-4">
-                    <Clock className="h-12 w-12 mx-auto mb-2" />
-                    <p>Loading historical data for predictions...</p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Need at least 30 days of historical data for accurate predictions
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })()}
+      {/* Technical Analysis */}
+      <Card className="card-matte">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+            <BarChart3 className="h-6 w-6 text-foreground" />
+            Technical Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 card-matte">
+              <div className="text-2xl font-bold text-blue-500 mb-2">
+                {candles && candles.c && candles.c.length > 0 ? 
+                  ((candles.c[candles.c.length - 1] - candles.c[0]) / candles.c[0] * 100).toFixed(1) + '%' : 'N/A'}
+              </div>
+              <div className="text-sm text-muted-foreground">30-Day Return</div>
+            </div>
+            <div className="text-center p-4 card-matte">
+              <div className="text-2xl font-bold text-green-500 mb-2">
+                {candles && candles.v ? 
+                  (candles.v.reduce((sum, vol) => sum + vol, 0) / candles.v.length / 1000000).toFixed(1) + 'M' : 'N/A'}
+              </div>
+              <div className="text-sm text-muted-foreground">Avg Volume</div>
+            </div>
+            <div className="text-center p-4 card-matte">
+              <div className="text-2xl font-bold text-purple-500 mb-2">
+                {candles && candles.c ? 
+                  (Math.max(...candles.c) - Math.min(...candles.c)).toFixed(2) : 'N/A'}
+              </div>
+              <div className="text-sm text-muted-foreground">Price Range</div>
+            </div>
+            <div className="text-center p-4 card-matte">
+              <div className="text-2xl font-bold text-orange-500 mb-2">
+                {candles && candles.c ? 
+                  (candles.c.reduce((sum, price) => sum + price, 0) / candles.c.length).toFixed(2) : 'N/A'}
+              </div>
+              <div className="text-sm text-muted-foreground">Avg Price</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
-  const renderCharts = () => {
-    const period = searchParams.get('period') as '1D' | '5D' | '1M' | '6M' | 'YTD' | '1Y' | '5Y' | 'MAX' || '1M';
-    
-    return (
-      <div className="space-y-6">
-        <PolygonChart symbol={symbol} period={period} />
-
-        {/* Additional Chart Options */}
-        <Card className="card-matte">
-              <CardHeader>
-            <CardTitle className="text-xl font-bold text-foreground">
-              Chart Options
-            </CardTitle>
-              </CardHeader>
-              <CardContent>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button 
-                onClick={() => handleExternalLink(`https://finance.yahoo.com/quote/${symbol}`)}
-                className="btn-matte"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View on Yahoo Finance
-              </Button>
-              <Button 
-                onClick={() => handleExternalLink(`https://www.google.com/finance/quote/${symbol}:NASDAQ`)}
-                className="btn-matte-outline"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View on Google Finance
-              </Button>
-              <Button 
-                onClick={() => handleExternalLink(`https://www.tradingview.com/symbols/NASDAQ-${symbol}/`)}
-                className="btn-matte-outline"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View on TradingView
-              </Button>
-                </div>
-              </CardContent>
-            </Card>
-      </div>
-    );
-  };
+  const renderCharts = () => (
+    <div className="space-y-8">
+      <Card className="card-matte">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+            <BarChart3 className="h-6 w-6 text-foreground" />
+            Price Charts
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PolygonChart symbol={symbol} period="1M" />
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   const renderProfile = () => (
-    <Card className="card-matte">
-              <CardHeader>
-        <CardTitle className="text-xl font-bold text-foreground">
-          Company Profile
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-        {profile ? (
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              {profile.logo && (
-                <img src={profile.logo} alt={`${profile.name} logo`} className="w-16 h-16 rounded-lg" />
-              )}
-              <div>
-                <h3 className="text-xl font-bold text-foreground">{profile.name}</h3>
-                <p className="text-muted-foreground">{profile.ticker}</p>
-              </div>
-            </div>
-            
+    <div className="space-y-8">
+      <Card className="card-matte">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Building2 className="h-6 w-6 text-foreground" />
+            Company Profile
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {profile ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <div className="text-sm text-muted-foreground">Industry</div>
-                  <div className="text-foreground font-medium">{profile.industry}</div>
+                  <div className="text-sm text-muted-foreground">Company Name</div>
+                  <div className="text-foreground font-medium">{profile.name}</div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Country</div>
@@ -313,11 +221,14 @@ const Dashboard = () => {
                   <div className="text-foreground font-medium">{profile.exchange}</div>
                 </div>
                 <div>
+                  <div className="text-sm text-muted-foreground">Industry</div>
+                  <div className="text-foreground font-medium">{profile.industry}</div>
+                </div>
+                <div>
                   <div className="text-sm text-muted-foreground">IPO Date</div>
-                  <div className="text-foreground font-medium">{profile.ipo}</div>
+                  <div className="text-foreground font-medium">{profile.ipo || 'N/A'}</div>
                 </div>
               </div>
-              
               <div className="space-y-4">
                 <div>
                   <div className="text-sm text-muted-foreground">Market Cap</div>
@@ -325,11 +236,15 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Shares Outstanding</div>
-                  <div className="text-foreground font-medium">{profile.shareOutstanding?.toLocaleString()}</div>
+                  <div className="text-foreground font-medium">{profile.shareOutstanding ? (profile.shareOutstanding / 1000000).toFixed(1) + 'M' : 'N/A'}</div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Currency</div>
                   <div className="text-foreground font-medium">{profile.currency}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Phone</div>
+                  <div className="text-foreground font-medium">{profile.phone || 'N/A'}</div>
                 </div>
                 {profile.weburl && (
                   <div>
@@ -346,65 +261,67 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Company profile data not available</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-muted-foreground">Company profile not available</div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 
   const renderNews = () => (
-    <Card className="card-matte">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold text-foreground">
-          Latest News
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {news && news.length > 0 ? (
-          <div className="space-y-4">
-            {news.slice(0, 5).map((item, index) => (
-              <div key={index} className="p-4 card-matte hover:bg-accent transition-colors">
-                <div className="flex items-start gap-4">
-                  {item.image && (
-                    <img src={item.image} alt="News" className="w-16 h-16 object-cover rounded-lg" />
-                  )}
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-foreground mb-2 line-clamp-2">
-                      {item.headline}
-                    </h4>
-                    <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                      {item.summary}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{item.source}</span>
-                      <span>{new Date(item.datetime * 1000).toLocaleDateString()}</span>
-                  </div>
+    <div className="space-y-8">
+      <Card className="card-matte">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Activity className="h-6 w-6 text-foreground" />
+            Latest News
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {news && news.length > 0 ? (
+            <div className="space-y-4">
+              {news.slice(0, 5).map((item, index) => (
+                <div key={index} className="p-4 card-matte hover:bg-accent transition-colors">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground mb-2">{item.headline}</h3>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.summary}</p>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>{new Date(item.datetime).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{new Date(item.datetime).toLocaleTimeString()}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">{item.source}</Badge>
+                      </div>
+                    </div>
                     <Button 
-                      variant="link" 
-                      className="p-0 h-auto text-primary mt-2"
+                      variant="outline" 
+                      size="sm"
                       onClick={() => handleExternalLink(item.url)}
+                      className="btn-matte-outline"
                     >
-                      Read More
+                      Read
                       <ExternalLink className="h-3 w-3 ml-1" />
                     </Button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No recent news available</p>
-          </div>
-        )}
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-muted-foreground">No recent news available</div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 
   return (
@@ -413,157 +330,65 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/')} 
+            variant="outline" 
             className="btn-matte-outline"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
           <div className="flex items-center gap-3">
-            <CompanyLogoWithFallback 
+            <CompanyLogoWithFallback
               symbol={symbol}
               companyName={getStockName(symbol)}
               size="w-12 h-12"
             />
             <div>
-              <h1 className="text-3xl font-bold text-foreground">{symbol}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{symbol}</h1>
               <p className="text-muted-foreground">{getStockName(symbol)}</p>
             </div>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex gap-2">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8">
+          {[
+            { key: 'overview', label: 'Overview', icon: Target },
+            { key: 'charts', label: 'Charts', icon: BarChart3 },
+            { key: 'profile', label: 'Profile', icon: Building2 },
+            { key: 'news', label: 'News', icon: Activity }
+          ].map((tab) => (
             <Button
-              variant={activeTab === 'overview' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('overview')}
-              className={activeTab === 'overview' ? 'btn-matte' : 'btn-matte-outline'}
+              key={tab.key}
+              variant={activeTab === tab.key ? "default" : "outline"}
+              onClick={() => setActiveTab(tab.key as any)}
+              className={activeTab === tab.key ? "btn-matte" : "btn-matte-outline"}
             >
-              Overview
+              <tab.icon className="h-4 w-4 mr-2" />
+              {tab.label}
             </Button>
-            <Button
-              variant={activeTab === 'charts' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('charts')}
-              className={activeTab === 'charts' ? 'btn-matte' : 'btn-matte-outline'}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Charts
-            </Button>
-            <Button
-              variant={activeTab === 'profile' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('profile')}
-              className={activeTab === 'profile' ? 'btn-matte' : 'btn-matte-outline'}
-            >
-              <Building2 className="h-4 w-4 mr-2" />
-              Profile
-            </Button>
-            <Button
-              variant={activeTab === 'news' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('news')}
-              className={activeTab === 'news' ? 'btn-matte' : 'btn-matte-outline'}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              News
-            </Button>
-          </div>
-          
-          {/* Period Selector for Charts */}
-          {activeTab === 'charts' && (
-            <div className="flex gap-2">
-              {(['1D', '5D', '1M', '6M', 'YTD', '1Y', '5Y', 'MAX'] as const).map((p) => {
-                const currentPeriod = searchParams.get('period') as '1D' | '5D' | '1M' | '6M' | 'YTD' | '1Y' | '5Y' | 'MAX' || '1M';
-                return (
-                  <Button
-                    key={p}
-                    variant={currentPeriod === p ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => {
-                      const newUrl = new URL(window.location.href);
-                      newUrl.searchParams.set('period', p);
-                      window.history.pushState({}, '', newUrl.toString());
-                      window.location.reload();
-                    }}
-                    className={`px-3 py-1 text-sm font-medium transition-all duration-200 ${
-                      currentPeriod === p ? 'btn-matte' : 'btn-matte-outline'
-                    }`}
-                  >
-                    {p}
-                  </Button>
-                );
-              })}
-            </div>
-          )}
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            {activeTab === 'overview' && renderOverview()}
-            {activeTab === 'charts' && renderCharts()}
-            {activeTab === 'profile' && renderProfile()}
-            {activeTab === 'news' && renderNews()}
-          </div>
+        {/* Content */}
+        {activeTab === 'overview' && renderOverview()}
+        {activeTab === 'charts' && renderCharts()}
+        {activeTab === 'profile' && renderProfile()}
+        {activeTab === 'news' && renderNews()}
 
-          {/* Sidebar */}
-          <div className="space-y-8">
-            {/* Quick Actions */}
-            <Card className="card-matte">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-foreground">
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button 
-                  onClick={() => setActiveTab('charts')}
-                  className="w-full btn-matte"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  View Charts
-                </Button>
-                <Button 
-                  onClick={() => setActiveTab('profile')}
-                  className="w-full btn-matte-outline"
-                >
-                  <Building2 className="h-4 w-4 mr-2" />
-                  Company Profile
-                </Button>
-                <Button 
-                  onClick={() => setActiveTab('news')}
-                  className="w-full btn-matte-outline"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  News & Events
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Market Status */}
-            <Card className="card-matte">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-foreground">
-                  Market Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Last Updated</span>
-                  <span className="text-foreground font-medium">
-                    {new Date().toLocaleTimeString()}
-                  </span>
-                </div>
-                    <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Data Source</span>
-                  <span className="text-foreground font-medium">Alpha Vantage API</span>
-                    </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Refresh Rate</span>
-                  <span className="text-foreground font-medium">5 minutes</span>
-                  </div>
-              </CardContent>
-            </Card>
+        {/* Footer */}
+        <div className="mt-12 pt-8 border-t border-border">
+          <div className="text-center text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2">
+                <span>Data Source:</span>
+                <span className="text-foreground font-medium">Alpha Vantage API</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>Charts:</span>
+                <span className="text-foreground font-medium">Polygon.io</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
