@@ -4,8 +4,8 @@ import { TrendingUp, Star, Target, Zap, ArrowUpRight, TrendingDown, BarChart3, C
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CompanyLogoWithFallback } from '@/components/CompanyLogo';
-import { formatPrice, formatChange, formatPercent, formatVolume } from '@/lib/utils';
-import { useStockQuote } from '@/hooks/useFinnhub';
+import { formatPrice, formatChange, formatPercent, formatVolume, generatePrediction, PredictionResult } from '@/lib/utils';
+import { useStockQuote, useStockCandles } from '@/hooks/useFinnhub';
 
 interface StockConfidence {
   symbol: string;
@@ -22,6 +22,7 @@ interface StockConfidence {
   resistance: number;
   sector: string;
   reason: string;
+  prediction?: PredictionResult;
 }
 
 const HighConfidenceStocks = () => {
@@ -44,45 +45,72 @@ const HighConfidenceStocks = () => {
     { symbol: 'CRM', name: 'Salesforce, Inc.', sector: 'Technology' },
   ];
 
-  // Use real-time quotes for each stock
+  // Use real-time quotes and historical data for each stock
   const stockQuotes = stockList.map(stock => useStockQuote(stock.symbol));
+  const stockCandles = stockList.map(stock => useStockCandles(stock.symbol, 'D', 30));
 
-  // Generate high-confidence stocks data with real prices
+  // Generate high-confidence stocks data with real prices and predictions
   const generateHighConfidenceStocks = (): StockConfidence[] => {
     return stockList.map((stock, index) => {
       const quote = stockQuotes[index];
+      const candles = stockCandles[index];
       const quoteData = quote.data;
+      const candleData = candles.data;
 
       // Use real price data if available, fallback to simulated data
       const currentPrice = quoteData?.c || (100 + Math.random() * 400);
       const priceChange = quoteData?.d || (Math.random() - 0.3) * 20;
       const priceChangePercent = quoteData?.dp || (priceChange / currentPrice) * 100;
       
-      // Generate stable technical indicators (only once per stock)
-      const stockKey = stock.symbol;
-      const confidence = 70 + (stockKey.charCodeAt(0) % 25); // Stable confidence based on symbol
-      const momentum = 60 + (stockKey.charCodeAt(1) % 35); // Stable momentum based on symbol
-      const volume = 1000000 + (stockKey.charCodeAt(2) % 9000000); // Stable volume
-      const rsi = 50 + (stockKey.charCodeAt(3) % 30); // Stable RSI
-      const macd = (stockKey.charCodeAt(4) % 500) / 100; // Stable MACD
-      const support = currentPrice * 0.95;
-      const resistance = currentPrice * 1.05;
+      // Generate real predictions using historical data
+      let prediction: PredictionResult | undefined;
+      let confidence = 50;
+      let momentum = 0;
+      let rsi = 50;
+      let macd = 0;
+      let support = currentPrice * 0.95;
+      let resistance = currentPrice * 1.05;
+      let reason = 'Technical analysis pending';
 
-      const reasons = [
-        'Strong earnings momentum',
-        'Technical breakout confirmed',
-        'High volume accumulation',
-        'Positive analyst revisions',
-        'Sector rotation favor',
-        'Institutional buying',
-        'Breakout above resistance',
-        'RSI showing strength',
-        'MACD bullish crossover',
-        'Support level holding'
-      ];
+      if (candleData && candleData.c && candleData.c.length >= 30) {
+        // Generate real prediction using historical data
+        prediction = generatePrediction(stock.symbol, candleData, '7D');
+        
+        // Use real technical indicators from prediction
+        confidence = prediction.confidence;
+        rsi = prediction.technicalIndicators.rsi;
+        macd = prediction.technicalIndicators.macd;
+        momentum = prediction.technicalIndicators.momentum;
+        support = prediction.technicalIndicators.bollingerLower;
+        resistance = prediction.technicalIndicators.bollingerUpper;
+        
+        // Use first reasoning as the main reason
+        reason = prediction.reasoning.length > 0 ? prediction.reasoning[0] : 'Technical analysis complete';
+      } else {
+        // Fallback to simulated data if no historical data available
+        const stockKey = stock.symbol;
+        confidence = 70 + (stockKey.charCodeAt(0) % 25);
+        momentum = 60 + (stockKey.charCodeAt(1) % 35);
+        rsi = 50 + (stockKey.charCodeAt(3) % 30);
+        macd = (stockKey.charCodeAt(4) % 500) / 100;
+        
+        const reasons = [
+          'Strong earnings momentum',
+          'Technical breakout confirmed',
+          'High volume accumulation',
+          'Positive analyst revisions',
+          'Sector rotation favor',
+          'Institutional buying',
+          'Breakout above resistance',
+          'RSI showing strength',
+          'MACD bullish crossover',
+          'Support level holding'
+        ];
+        const reasonIndex = stockKey.charCodeAt(0) % reasons.length;
+        reason = reasons[reasonIndex];
+      }
 
-      // Use stable reason based on symbol
-      const reasonIndex = stockKey.charCodeAt(0) % reasons.length;
+      const volume = candleData?.v?.[candleData.v.length - 1] || 1000000 + (stock.symbol.charCodeAt(2) % 9000000);
 
       return {
         symbol: stock.symbol,
@@ -98,7 +126,8 @@ const HighConfidenceStocks = () => {
         support: Math.round(support * 100) / 100,
         resistance: Math.round(resistance * 100) / 100,
         sector: stock.sector,
-        reason: reasons[reasonIndex]
+        reason,
+        prediction
       };
     });
   };
@@ -108,8 +137,9 @@ const HighConfidenceStocks = () => {
       setLoading(true);
       // Check if we have real data from at least some stocks
       const hasRealData = stockQuotes.some(quote => quote.data && !quote.isLoading);
+      const hasHistoricalData = stockCandles.some(candles => candles.data && !candles.isLoading);
       
-      if (hasRealData) {
+      if (hasRealData || hasHistoricalData) {
         const stockData = generateHighConfidenceStocks();
         setStocks(stockData);
         setLoading(false);
@@ -128,12 +158,14 @@ const HighConfidenceStocks = () => {
     const interval = setInterval(loadStocks, 300000); // 5 minutes
 
     return () => clearInterval(interval);
-  }, [stockQuotes]);
+  }, [stockQuotes, stockCandles]);
 
   // Update stocks when real data becomes available, but with debouncing
   useEffect(() => {
     const hasRealData = stockQuotes.some(quote => quote.data && !quote.isLoading);
-    if (hasRealData && stocks.length > 0) {
+    const hasHistoricalData = stockCandles.some(candles => candles.data && !candles.isLoading);
+    
+    if ((hasRealData || hasHistoricalData) && stocks.length > 0) {
       // Add a small delay to prevent rapid updates
       const timeoutId = setTimeout(() => {
         const stockData = generateHighConfidenceStocks();
@@ -142,7 +174,7 @@ const HighConfidenceStocks = () => {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [stockQuotes]);
+  }, [stockQuotes, stockCandles]);
 
   const sortedStocks = [...stocks].sort((a, b) => {
     switch (sortBy) {
