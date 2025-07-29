@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { StockSearchCard } from "./StockSearchCard";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
+import { Button } from "./ui/button";
+import { ArrowRight, Lightbulb } from "lucide-react";
 
 const HeroSection = () => {
   const tickerRef = useRef<HTMLDivElement>(null);
@@ -20,26 +22,28 @@ const HeroSection = () => {
     <section className="w-full flex flex-col items-center justify-center py-12 bg-background">
       {/* Hero Title and Description */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-          AI-Powered Stock Predictions
+        <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+          Stonks
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-          Get accurate stock predictions using real market data, advanced technical analysis, and AI insights. 
-          All completely free and updated in real-time.
+        <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          Real-time stock data, professional charts, and market insights
         </p>
-        <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            Real-time Data
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-            AI Analysis
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-            100% Free
-          </span>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button 
+            onClick={() => navigate('/all-stocks')} 
+            className="btn-matte text-lg px-8 py-3"
+          >
+            Browse Stocks
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
+          <Button 
+            onClick={() => navigate('/how-it-works')} 
+            variant="outline"
+            className="btn-matte-outline text-lg px-8 py-3"
+          >
+            Learn More
+            <Lightbulb className="h-5 w-5 ml-2" />
+          </Button>
         </div>
       </div>
 

@@ -192,7 +192,7 @@ export const StockSearchCard = () => {
             <Search className="h-6 w-6 text-foreground" />
           </div>
           <CardTitle className="text-2xl font-bold text-foreground">
-            Stock Analysis Dashboard
+            Stock Search
           </CardTitle>
         </div>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

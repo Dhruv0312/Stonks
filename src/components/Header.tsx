@@ -43,7 +43,7 @@ const Header = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-foreground font-bold text-lg leading-none">Stonks</span>
-              <span className="text-muted-foreground text-xs leading-none">AI Intelligence</span>
+              <span className="text-muted-foreground text-xs leading-none">Market Data</span>
             </div>
         </div>
         
