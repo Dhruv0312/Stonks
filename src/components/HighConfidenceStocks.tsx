@@ -1,11 +1,28 @@
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Target, Zap, ArrowRight, Activity, AlertCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useGoogleSheetsStockQuote, parseStockData } from "@/hooks/useGoogleSheetsStockData";
+import { useStockData } from '@/hooks/useGoogleSheetsStockData';
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
 import { formatPrice, formatChange, formatPercent } from "@/lib/utils";
+
+// Helper function to parse stock data
+const parseStockData = (stock: any) => {
+  const price = parseFloat(stock.price?.replace(/[$,]/g, '')) || 0;
+  const change = parseFloat(stock.change?.replace(/[+%,]/g, '')) || 0;
+  const changePercent = parseFloat(stock.changePercent?.replace(/[+%,]/g, '')) || 0;
+  
+  return {
+    ...stock,
+    price,
+    change,
+    changePercent,
+    isPositive: change >= 0,
+    isNegative: change < 0
+  };
+};
 
 // Popular stocks for display
 const popularStocks = [
@@ -43,7 +60,8 @@ const PopularStocks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {popularStocks.map((stock) => {
-            const { data: stockData, isLoading, error } = useGoogleSheetsStockQuote(stock.symbol);
+            const { data: allStockData, isLoading, error } = useStockData();
+            const stockData = allStockData?.find((s: any) => s.symbol === stock.symbol);
             const parsedData = stockData ? parseStockData(stockData) : null;
             
             return (

@@ -1,8 +1,25 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useGoogleSheetsStockQuote, parseStockData } from "@/hooks/useGoogleSheetsStockData";
-import { TrendingUp, TrendingDown, Minus, Activity } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { useStockData } from '@/hooks/useGoogleSheetsStockData';
+import { CompanyLogoWithFallback } from '@/components/CompanyLogo';
+import { formatPrice, formatChange, formatPercent } from '@/lib/utils';
+import { TrendingUp, TrendingDown, Minus, Activity } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+// Helper function to parse stock data
+const parseStockData = (stock: any) => {
+  const price = parseFloat(stock.price?.replace(/[$,]/g, '')) || 0;
+  const change = parseFloat(stock.change?.replace(/[+%,]/g, '')) || 0;
+  const changePercent = parseFloat(stock.changePercent?.replace(/[+%,]/g, '')) || 0;
+  
+  return {
+    ...stock,
+    price,
+    change,
+    changePercent,
+    isPositive: change >= 0,
+    isNegative: change < 0
+  };
+};
 
 // Reduced list of stocks for ticker to save API calls
 const tickerStocks = [
@@ -14,15 +31,15 @@ const tickerStocks = [
 ];
 
 const LiveStockTicker = () => {
-  const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   // Only fetch data for the currently visible stock
   const currentStock = tickerStocks[currentIndex];
-  const { data: stockData, isLoading, error } = useGoogleSheetsStockQuote(currentStock.symbol);
+  const { data: allStockData, isLoading, error } = useStockData();
+  const stockData = allStockData?.find((stock: any) => stock.symbol === currentStock.symbol);
   const parsedData = stockData ? parseStockData(stockData) : null;
 
-  useEffect(() => {
+  React.useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % tickerStocks.length);
     }, 3000); // Change stock every 3 seconds

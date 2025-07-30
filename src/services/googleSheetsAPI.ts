@@ -1,166 +1,73 @@
-// Client-side API service for Google Sheets
-// This calls backend endpoints that handle the actual Google Sheets API
+// Simple Google Sheets API service
+// Using Google Sheets API v4 with API key for public sheets
 
-export interface StockData {
-  symbol: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  volume: number;
-  date: string;
-}
+const API_KEY = 'YOUR_GOOGLE_SHEETS_API_KEY_HERE'; // Replace with your actual API key from Google Cloud Console
+const SPREADSHEET_ID = '10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY';
 
-export interface PredictionData {
-  symbol: string;
-  predictedPrice: number;
-  confidence: number;
-  predictionDate: string;
-  algorithm: string;
-}
-
-// For now, we'll use mock data since we don't have a backend
-// In production, you would replace these with actual API calls
-
-export class GoogleSheetsAPIService {
-  private spreadsheetId: string;
+class GoogleSheetsAPI {
   private baseURL: string;
 
-  constructor(spreadsheetId: string, baseURL?: string) {
-    this.spreadsheetId = spreadsheetId;
-    // Use environment variable for production, fallback to localhost for development
-    this.baseURL = baseURL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
-      ? 'http://localhost:3001/api' 
-      : '/api');
+  constructor() {
+    // For now, let's use a simple approach with a public API
+    this.baseURL = 'https://sheets.googleapis.com/v4/spreadsheets';
   }
 
-  // API calls - requires backend server to be running
-  async createSpreadsheet(title: string) {
-    console.log('API: Creating spreadsheet with title:', title);
+  // Get stock data from Google Sheets
+  async getStockData(): Promise<any> {
     try {
-      const response = await this.makeAPICall('/sheets/create', {
-        method: 'POST',
-        body: JSON.stringify({ title })
-      });
-      return { data: response };
-    } catch (error) {
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  async readStockData(range: string = 'Stock Data!A:F') {
-    console.log('API: Reading stock data from range:', range);
-    
-    try {
-      // Try to call the backend API first
-      const response = await this.makeAPICall(`/sheets/${this.spreadsheetId}/read?range=${range}`);
-      return response.values || [];
-    } catch (error) {
-      console.log('Backend not available, data not available');
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  async writeStockData(data: StockData[], range: string = 'Stock Data!A:F') {
-    console.log('API: Writing stock data to range:', range, data);
-    try {
-      const response = await this.makeAPICall(`/sheets/${this.spreadsheetId}/write`, {
-        method: 'POST',
-        body: JSON.stringify({ range, values: data.map(item => Object.values(item)) })
-      });
-      return { data: response };
-    } catch (error) {
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  async writePredictionData(data: PredictionData[], range: string = 'Predictions!A:F') {
-    console.log('API: Writing prediction data to range:', range, data);
-    try {
-      const response = await this.makeAPICall(`/sheets/${this.spreadsheetId}/write`, {
-        method: 'POST',
-        body: JSON.stringify({ range, values: data.map(item => Object.values(item)) })
-      });
-      return { data: response };
-    } catch (error) {
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  async appendStockData(data: StockData[], range: string = 'Stock Data!A:F') {
-    console.log('API: Appending stock data to range:', range, data);
-    try {
-      const response = await this.makeAPICall(`/sheets/${this.spreadsheetId}/append`, {
-        method: 'POST',
-        body: JSON.stringify({ range, values: data.map(item => Object.values(item)) })
-      });
-      return { data: response };
-    } catch (error) {
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  async getSpreadsheetInfo() {
-    console.log('API: Getting spreadsheet info for:', this.spreadsheetId);
-    
-    try {
-      // Try to call the backend API first
-      const response = await this.makeAPICall(`/sheets/${this.spreadsheetId}/info`);
-      return { data: response };
-    } catch (error) {
-      console.log('Backend not available, data not available');
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  async clearRange(range: string) {
-    console.log('API: Clearing range:', range);
-    try {
-      const response = await this.makeAPICall(`/sheets/${this.spreadsheetId}/clear?range=${range}`, {
-        method: 'DELETE'
-      });
-      return { data: response };
-    } catch (error) {
-      throw new Error('Data not available - Backend server is not running');
-    }
-  }
-
-  // Helper method to make actual API calls (for when you have a backend)
-  private async makeAPICall(endpoint: string, options: RequestInit = {}) {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        ...options,
-      });
-
+      const response = await fetch(
+        `${this.baseURL}/${SPREADSHEET_ID}/values/Stock Data!A:Z?key=${API_KEY}`
+      );
+      
       if (!response.ok) {
-        throw new Error(`API call failed: ${response.statusText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      return await response.json();
+      
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.error('API call error:', error);
+      console.error('Error fetching stock data:', error);
+      throw error;
+    }
+  }
+
+  // Get technical data from Google Sheets
+  async getTechnicalData(): Promise<any> {
+    try {
+      const response = await fetch(
+        `${this.baseURL}/${SPREADSHEET_ID}/values/Technical Data!A:Z?key=${API_KEY}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching technical data:', error);
+      throw error;
+    }
+  }
+
+  // Get watchlist data from Google Sheets
+  async getWatchlistData(): Promise<any> {
+    try {
+      const response = await fetch(
+        `${this.baseURL}/${SPREADSHEET_ID}/values/Watchlist!A:Z?key=${API_KEY}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching watchlist data:', error);
       throw error;
     }
   }
 }
 
-// Example usage function
-export async function initializeGoogleSheetsAPI(spreadsheetId?: string) {
-  try {
-    // If no spreadsheet ID provided, create a new one
-    if (!spreadsheetId) {
-      const sheetsService = new GoogleSheetsAPIService('');
-      const newSpreadsheet = await sheetsService.createSpreadsheet('Stock Predictions Dashboard');
-      spreadsheetId = newSpreadsheet.data.spreadsheetId!;
-      console.log('Created new spreadsheet with ID:', spreadsheetId);
-    }
-
-    return new GoogleSheetsAPIService(spreadsheetId);
-  } catch (error) {
-    console.error('Error initializing Google Sheets API:', error);
-    throw new Error('Data not available - Backend server is not running');
-  }
-} 
+export default new GoogleSheetsAPI(); 

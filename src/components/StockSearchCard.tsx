@@ -1,14 +1,30 @@
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Brain, TrendingUp, Zap, Shield, BarChart3, Search, Sparkles, Building2, TrendingDown, Activity } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
-import { useGoogleSheetsStockData } from "@/hooks/useGoogleSheetsStockData";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { CompanyLogoWithFallback } from '@/components/CompanyLogo';
+import { Search, TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
+import { useStockData } from '@/hooks/useGoogleSheetsStockData';
+import { formatPrice, formatChange, formatPercent } from '@/lib/utils';
 
+// Helper function to parse stock data
+const parseStockData = (stock: any) => {
+  const price = parseFloat(stock.price?.replace(/[$,]/g, '')) || 0;
+  const change = parseFloat(stock.change?.replace(/[+%,]/g, '')) || 0;
+  const changePercent = parseFloat(stock.changePercent?.replace(/[+%,]/g, '')) || 0;
+  
+  return {
+    ...stock,
+    price,
+    change,
+    changePercent,
+    isPositive: change >= 0,
+    isNegative: change < 0
+  };
+};
 
 
 export const StockSearchCard = () => {
@@ -19,7 +35,7 @@ export const StockSearchCard = () => {
   const navigate = useNavigate();
   
   // Get stock data from Google Sheets
-  const { data: stockData, isLoading: dataLoading } = useGoogleSheetsStockData();
+  const { data: stockData, isLoading: dataLoading } = useStockData();
   
   // Create stock database from Google Sheets data
   const stockDatabase = stockData ? stockData.map(stock => ({

@@ -1,39 +1,52 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import React from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CompanyLogoWithFallback } from '@/components/CompanyLogo';
+import { formatPrice, formatChange, formatPercent, formatMarketCap } from '@/lib/utils';
 import { 
   TrendingUp, 
   TrendingDown, 
+  ArrowLeft, 
   Activity, 
+  Target, 
   Zap, 
-  Building2,
-  DollarSign,
-  Percent,
-  Calendar,
-  ArrowLeft,
-  BarChart3,
-  Target,
-  AlertTriangle,
+  Info,
   CheckCircle,
   XCircle,
-  Info,
+  AlertTriangle,
   Gauge,
-  TrendingUpIcon,
-  TrendingDownIcon
-} from "lucide-react";
-import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
-import { useGoogleSheetsStockQuote, useGoogleSheetsTechnicalQuote, parseStockData } from "@/hooks/useGoogleSheetsStockData";
-import { formatPrice, formatChange, formatPercent, formatMarketCap } from "@/lib/utils";
+  BarChart3
+} from 'lucide-react';
+import { useStockData, useTechnicalData } from '@/hooks/useGoogleSheetsStockData';
 
+// Helper function to parse stock data
+const parseStockData = (stock: any) => {
+  const price = parseFloat(stock.price?.replace(/[$,]/g, '')) || 0;
+  const change = parseFloat(stock.change?.replace(/[+%,]/g, '')) || 0;
+  const changePercent = parseFloat(stock.changePercent?.replace(/[+%,]/g, '')) || 0;
+  
+  return {
+    ...stock,
+    price,
+    change,
+    changePercent,
+    isPositive: change >= 0,
+    isNegative: change < 0
+  };
+};
 
 const StockDetail = () => {
   const { symbol } = useParams<{ symbol: string }>();
   const navigate = useNavigate();
   
-  const { data: stockData, isLoading: stockLoading, error: stockError } = useGoogleSheetsStockQuote(symbol || "");
-  const { data: technicalData, isLoading: technicalLoading, error: technicalError } = useGoogleSheetsTechnicalQuote(symbol || "");
+  const { data: allStockData, isLoading: stockLoading, error: stockError } = useStockData();
+  const { data: allTechnicalData, isLoading: technicalLoading, error: technicalError } = useTechnicalData();
+  
+  // Filter data for the specific symbol
+  const stockData = allStockData?.find((stock: any) => stock.symbol === symbol);
+  const technicalData = allTechnicalData?.find((tech: any) => tech.symbol === symbol);
   
   const parsedStockData = stockData ? parseStockData(stockData) : null;
   const parsedTechnicalData = technicalData ? {
@@ -50,8 +63,8 @@ const StockDetail = () => {
   };
 
   const getRSIRecommendation = (rsi: number) => {
-    if (rsi >= 70) return { signal: "SELL", color: "text-red-500", icon: <TrendingDownIcon className="h-4 w-4" />, reason: "Overbought - Stock may be overvalued" };
-    if (rsi <= 30) return { signal: "BUY", color: "text-green-500", icon: <TrendingUpIcon className="h-4 w-4" />, reason: "Oversold - Stock may be undervalued" };
+    if (rsi >= 70) return { signal: "SELL", color: "text-red-500", icon: <TrendingDown className="h-4 w-4" />, reason: "Overbought - Stock may be overvalued" };
+    if (rsi <= 30) return { signal: "BUY", color: "text-green-500", icon: <TrendingUp className="h-4 w-4" />, reason: "Oversold - Stock may be undervalued" };
     if (rsi > 50) return { signal: "HOLD", color: "text-yellow-500", icon: <Activity className="h-4 w-4" />, reason: "Bullish momentum - Stock showing strength" };
     return { signal: "HOLD", color: "text-yellow-500", icon: <Activity className="h-4 w-4" />, reason: "Bearish momentum - Stock showing weakness" };
   };
@@ -60,8 +73,8 @@ const StockDetail = () => {
     const isBullish = macd > macdSignal && macdHistogram > 0;
     const isBearish = macd < macdSignal && macdHistogram < 0;
     
-    if (isBullish) return { signal: "BUY", color: "text-green-500", icon: <TrendingUpIcon className="h-4 w-4" />, reason: "Bullish crossover - Momentum is positive" };
-    if (isBearish) return { signal: "SELL", color: "text-red-500", icon: <TrendingDownIcon className="h-4 w-4" />, reason: "Bearish crossover - Momentum is negative" };
+    if (isBullish) return { signal: "BUY", color: "text-green-500", icon: <TrendingUp className="h-4 w-4" />, reason: "Bullish crossover - Momentum is positive" };
+    if (isBearish) return { signal: "SELL", color: "text-red-500", icon: <TrendingDown className="h-4 w-4" />, reason: "Bearish crossover - Momentum is negative" };
     return { signal: "HOLD", color: "text-yellow-500", icon: <Activity className="h-4 w-4" />, reason: "Neutral - No clear momentum direction" };
   };
 
@@ -139,7 +152,7 @@ const StockDetail = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <div className="icon-rounded">
-                <DollarSign className="h-5 w-5 text-gradient" />
+                <Zap className="h-5 w-5 text-gradient" />
               </div>
               <span className="text-gradient font-bold">Current Price</span>
             </CardTitle>
@@ -332,7 +345,7 @@ const StockDetail = () => {
           <Card className="card-matte">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5" />
+                <Info className="h-5 w-5" />
                 Company Information
               </CardTitle>
             </CardHeader>

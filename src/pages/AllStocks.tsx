@@ -1,27 +1,77 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CompanyLogoWithFallback } from '@/components/CompanyLogo';
+import { formatPrice, formatChange, formatPercent } from '@/lib/utils';
 import { 
+  TrendingUp, 
+  TrendingDown, 
   Search, 
   Grid3X3, 
   List, 
   Filter, 
-  Target, 
-  Zap, 
-  Building2, 
-  TrendingUp, 
-  Database,
-  RefreshCw,
   ArrowUpDown,
+  RefreshCw,
+  Target,
   ArrowUp,
-  ArrowDown
-} from "lucide-react";
-import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
-import { formatMarketCap } from "@/lib/utils";
-import { useGoogleSheetsStockData, useGoogleSheetsTechnicalData, parseStockData } from "@/hooks/useGoogleSheetsStockData";
+  ArrowDown,
+  Zap,
+  Building2,
+  Database
+} from 'lucide-react';
+import { useStockData, useTechnicalData } from '@/hooks/useGoogleSheetsStockData';
+
+// Helper function to parse stock data
+const parseStockData = (stock: any) => {
+  const price = parseFloat(stock.price?.replace(/[$,]/g, '')) || 0;
+  const change = parseFloat(stock.change?.replace(/[+%,]/g, '')) || 0;
+  const changePercent = parseFloat(stock.changePercent?.replace(/[+%,]/g, '')) || 0;
+  
+  let marketCap = 0;
+  if (stock.marketCap) {
+    const cleanMarketCap = stock.marketCap.toString().replace(/[$,BMTK\s]/gi, '');
+    marketCap = parseFloat(cleanMarketCap) || 0;
+    
+    if (stock.marketCap.toString().toUpperCase().includes('T')) {
+      marketCap *= 1e12;
+    } else if (stock.marketCap.toString().toUpperCase().includes('B')) {
+      marketCap *= 1e9;
+    } else if (stock.marketCap.toString().toUpperCase().includes('M')) {
+      marketCap *= 1e6;
+    } else if (stock.marketCap.toString().toUpperCase().includes('K')) {
+      marketCap *= 1e3;
+    }
+  }
+  
+  return {
+    ...stock,
+    price,
+    change,
+    changePercent,
+    marketCap,
+    isPositive: change >= 0,
+    isNegative: change < 0
+  };
+};
+
+// Helper function to format market cap
+const formatMarketCap = (marketCap: number): string => {
+  if (marketCap >= 1e12) {
+    return `$${(marketCap / 1e12).toFixed(2)}T`;
+  } else if (marketCap >= 1e9) {
+    return `$${(marketCap / 1e9).toFixed(2)}B`;
+  } else if (marketCap >= 1e6) {
+    return `$${(marketCap / 1e6).toFixed(2)}M`;
+  } else if (marketCap >= 1e3) {
+    return `$${(marketCap / 1e3).toFixed(2)}K`;
+  } else {
+    return `$${marketCap.toFixed(2)}`;
+  }
+};
 
 
 type SortField = "symbol" | "name" | "marketCap";
@@ -37,8 +87,8 @@ const AllStocks = () => {
   const [filterRecommendation, setFilterRecommendation] = useState<FilterRecommendation>("all");
   
   // Get stock data from Google Sheets
-  const { data: stockData, isLoading, error } = useGoogleSheetsStockData();
-  const { data: technicalData, isLoading: technicalLoading } = useGoogleSheetsTechnicalData();
+  const { data: stockData, isLoading, error } = useStockData();
+  const { data: technicalData, isLoading: technicalLoading } = useTechnicalData();
   
   // Trading recommendation functions
   const getRSIRecommendation = (rsi: number) => {

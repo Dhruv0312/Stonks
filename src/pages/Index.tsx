@@ -1,10 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useStockData } from '@/hooks/useGoogleSheetsStockData';
 import { TrendingUp, TrendingDown, Search, Activity, Github, Linkedin, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useGoogleSheetsStockData, parseStockData } from "@/hooks/useGoogleSheetsStockData";
+import { useEffect } from "react";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
 import { formatPrice, formatChange, formatPercent } from "@/lib/utils";
 
@@ -17,7 +19,7 @@ const Index = () => {
 
   
   // Get stock data from Google Sheets
-  const { data: stockData, isLoading: dataLoading } = useGoogleSheetsStockData();
+  const { data: stockData, isLoading: dataLoading } = useStockData();
   
   // Create stock database from Google Sheets data
   const stockDatabase = stockData ? stockData.map(stock => ({
@@ -253,19 +255,6 @@ const Index = () => {
         {/* Search Bar Section */}
         <section className="container mx-auto px-4 py-8">
           <Card className="card-matte max-w-2xl mx-auto">
-            <CardHeader className="text-center pb-6">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="icon-rounded">
-                  <Search className="h-6 w-6 text-gradient" />
-                </div>
-                <CardTitle className="text-2xl font-bold text-gradient">
-                  Search Stocks
-                </CardTitle>
-              </div>
-              <p className="text-muted-foreground font-medium">
-                Search by stock symbol or company name
-              </p>
-            </CardHeader>
             <CardContent className="space-y-4">
               <div className="relative">
                 <Input
@@ -351,9 +340,13 @@ const Index = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {tickerStocks.map((stock) => {
-              const { data: stockData, isLoading, error } = useGoogleSheetsStockData();
               const stockInfo = stockData?.find(s => s.symbol === stock.symbol);
-              const parsedData = stockInfo ? parseStockData(stockInfo) : null;
+              const parsedData = stockInfo ? {
+                price: stockInfo.price,
+                change: stockInfo.change,
+                isPositive: stockInfo.change > 0,
+                isNegative: stockInfo.change < 0,
+              } : null;
               
               return (
                 <Card
@@ -378,7 +371,7 @@ const Index = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground text-xs">Price</span>
                         <span className="text-foreground font-medium text-sm">
-                          {isLoading ? 'Loading...' : parsedData ? formatPrice(parsedData.price) : '-'}
+                          {dataLoading ? 'Loading...' : parsedData ? formatPrice(parsedData.price) : '-'}
                         </span>
                       </div>
 
