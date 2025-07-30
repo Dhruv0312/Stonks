@@ -13,6 +13,6 @@
     }
   ],
   "env": {
-    "GOOGLE_SHEETS_CREDENTIALS": "@google-sheets-credentials"
+    "GOOGLE_SHEETS_CREDENTIALS": ""
   }
 }
