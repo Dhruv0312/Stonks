@@ -61,18 +61,14 @@ const Header = () => {
             >
               All Stocks
             </Link>
-            <Link 
-              to="/dashboard" 
-              className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
-            >
-            Dashboard
-          </Link>
+
             <Link 
               to="/how-it-works" 
               className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium hover:scale-105 transform"
             >
             How It Works
           </Link>
+
         </nav>
 
           {/* Desktop Buttons */}
@@ -84,12 +80,6 @@ const Header = () => {
               className="w-10 h-10 rounded-2xl hover:bg-accent transition-all duration-300"
           >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
-            <Button variant="outline" className="btn-matte-outline">
-            Sign In
-          </Button>
-            <Button className="btn-matte">
-            Get Started
           </Button>
           </div>
 
@@ -132,13 +122,7 @@ const Header = () => {
               >
                 All Stocks
               </Link>
-              <Link 
-                to="/dashboard" 
-                className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
+
               <Link 
                 to="/how-it-works" 
                 className="text-foreground/80 hover:text-foreground transition-colors duration-200 font-medium py-2 px-4 rounded-xl hover:bg-accent"
@@ -146,15 +130,8 @@ const Header = () => {
               >
                 How It Works
               </Link>
+
             </nav>
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border/30">
-              <Button variant="outline" className="btn-matte-outline w-full">
-                Sign In
-              </Button>
-              <Button className="btn-matte w-full">
-                Get Started
-              </Button>
-            </div>
           </div>
         )}
       </div>

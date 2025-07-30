@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Target, Zap, ArrowRight, Activity, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useStockQuote } from "@/hooks/useAlphaVantage";
+import { useGoogleSheetsStockQuote, parseStockData } from "@/hooks/useGoogleSheetsStockData";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
 import { formatPrice, formatChange, formatPercent } from "@/lib/utils";
 
@@ -43,7 +43,8 @@ const PopularStocks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {popularStocks.map((stock) => {
-            const { data: quote, isLoading, error } = useStockQuote(stock.symbol);
+            const { data: stockData, isLoading, error } = useGoogleSheetsStockQuote(stock.symbol);
+            const parsedData = stockData ? parseStockData(stockData) : null;
             
             return (
               <Card
@@ -71,28 +72,28 @@ const PopularStocks = () => {
                         {error ? (
                           <div className="flex items-center gap-1 text-orange-500">
                             <AlertCircle className="h-4 w-4" />
-                            <span className="text-sm">Rate Limited</span>
+                            <span className="text-sm">Data Unavailable</span>
                           </div>
                         ) : (
                           <span className="text-foreground font-medium">
-                            {isLoading ? 'Loading...' : quote ? formatPrice(quote.c) : '-'}
+                            {isLoading ? 'Loading...' : parsedData ? formatPrice(parsedData.price) : '-'}
                           </span>
                         )}
                         <Zap className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>
 
-                    {quote && !error && (
+                    {parsedData && !error && (
                       <>
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground text-sm">Change</span>
                           <div className={`flex items-center gap-1 ${
-                            quote.d > 0 ? 'text-green-500' : 
-                            quote.d < 0 ? 'text-red-500' : 'text-muted-foreground'
+                            parsedData.isPositive ? 'text-green-500' : 
+                            parsedData.isNegative ? 'text-red-500' : 'text-muted-foreground'
                           }`}>
-                            {getChangeIcon(quote.d)}
+                            {getChangeIcon(parsedData.change)}
                             <span className="text-sm font-medium">
-                              {formatChange(quote.d)} ({formatPercent(quote.dp)})
+                              {parsedData.isPositive ? '+' : ''}{parsedData.change.toFixed(2)} ({parsedData.changePercent.toFixed(2)}%)
                             </span>
                           </div>
                         </div>
@@ -101,7 +102,7 @@ const PopularStocks = () => {
                           <span className="text-muted-foreground text-sm">Last Updated</span>
                           <div className="flex items-center gap-1">
                             <span className="text-foreground text-sm">
-                              {quote.t ? new Date(quote.t).toLocaleTimeString() : '-'}
+                              {parsedData.date ? new Date(parsedData.date).toLocaleTimeString() : '-'}
                             </span>
                             <Activity className="h-4 w-4 text-muted-foreground" />
                           </div>

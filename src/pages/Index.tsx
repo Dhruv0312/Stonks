@@ -1,157 +1,471 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, BarChart3, Target, Zap, Star, ArrowRight, Brain, Database, ChartLine, Shield, Lightbulb, Activity } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { TrendingUp, TrendingDown, Search, Activity, Github, Linkedin, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import HeroSection from "@/components/HeroSection";
-import LiveStockTicker from "@/components/LiveStockTicker";
-import PopularStocks from "@/components/HighConfidenceStocks";
+import { useState, useEffect } from "react";
+import { useGoogleSheetsStockData, parseStockData } from "@/hooks/useGoogleSheetsStockData";
+import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
+import { formatPrice, formatChange, formatPercent } from "@/lib/utils";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  
+
+  
+  // Get stock data from Google Sheets
+  const { data: stockData, isLoading: dataLoading } = useGoogleSheetsStockData();
+  
+  // Create stock database from Google Sheets data
+  const stockDatabase = stockData ? stockData.map(stock => ({
+    symbol: stock.symbol,
+    name: stock.volume || `${stock.symbol} Stock`, // Using volume field for company name
+    sector: "Technology" // Default sector since we don't have this data
+  })) : [];
+
+  // Popular stocks for display (6 stocks)
+  const popularStocks = [
+    { symbol: "AAPL", name: "Apple Inc." },
+    { symbol: "MSFT", name: "Microsoft Corp." },
+    { symbol: "GOOGL", name: "Alphabet Inc." },
+    { symbol: "AMZN", name: "Amazon.com Inc." },
+    { symbol: "NVDA", name: "NVIDIA Corp." },
+    { symbol: "TSLA", name: "Tesla Inc." }
+  ];
+
+  // Extended list for backdrop animations (more variety)
+  const backdropStocks = [
+    { symbol: "AAPL", name: "Apple Inc." },
+    { symbol: "MSFT", name: "Microsoft Corp." },
+    { symbol: "GOOGL", name: "Alphabet Inc." },
+    { symbol: "AMZN", name: "Amazon.com Inc." },
+    { symbol: "NVDA", name: "NVIDIA Corp." },
+    { symbol: "TSLA", name: "Tesla Inc." },
+    { symbol: "META", name: "Meta Platforms" },
+    { symbol: "NFLX", name: "Netflix Inc." },
+    { symbol: "JPM", name: "JPMorgan Chase" },
+    { symbol: "JNJ", name: "Johnson & Johnson" },
+    { symbol: "V", name: "Visa Inc." },
+    { symbol: "PG", name: "Procter & Gamble" },
+    { symbol: "UNH", name: "UnitedHealth Group" },
+    { symbol: "HD", name: "Home Depot" },
+    { symbol: "MA", name: "Mastercard" },
+    { symbol: "DIS", name: "Walt Disney" }
+  ];
+
+  // Live ticker stocks (8 stocks)
+  const tickerStocks = [
+    { symbol: "AAPL", name: "Apple" },
+    { symbol: "MSFT", name: "Microsoft" },
+    { symbol: "GOOGL", name: "Alphabet" },
+    { symbol: "AMZN", name: "Amazon" },
+    { symbol: "NVDA", name: "NVIDIA" },
+    { symbol: "TSLA", name: "Tesla" },
+    { symbol: "META", name: "Meta" },
+    { symbol: "NFLX", name: "Netflix" }
+  ];
+
+  // Filter stocks based on search query
+  useEffect(() => {
+    if (searchQuery.trim().length === 0 || dataLoading) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    const filtered = stockDatabase.filter(stock => 
+      stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      stock.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 8); // Limit to 8 suggestions
+    setSuggestions(filtered);
+    setShowSuggestions(filtered.length > 0);
+  }, [searchQuery, stockDatabase, dataLoading]);
+
+  const handleSearch = async (selectedSymbol?: string) => {
+    const symbolToSearch = selectedSymbol || searchQuery.trim();
+    if (!symbolToSearch) return;
+    setShowSuggestions(false);
+    
+    const stock = stockDatabase.find(s => 
+      s.symbol.toLowerCase() === symbolToSearch.toLowerCase() ||
+      s.name.toLowerCase().includes(symbolToSearch.toLowerCase())
+    );
+    const finalSymbol = stock ? stock.symbol : symbolToSearch.toUpperCase();
+    navigate(`/stock/${finalSymbol}`);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleSuggestionClick = (stock: typeof stockDatabase[0]) => {
+    setSearchQuery(stock.symbol);
+    handleSearch(stock.symbol);
+  };
+
+  const handleStockClick = (stock: { symbol: string; name: string }) => {
+    navigate(`/stock/${stock.symbol}`);
+  };
+
+  const getChangeIcon = (change: number) => {
+    if (change > 0) return <TrendingUp className="h-4 w-4 text-green-500" />;
+    if (change < 0) return <TrendingDown className="h-4 w-4 text-red-500" />;
+    return <Activity className="h-4 w-4 text-muted-foreground" />;
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <HeroSection />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Animated Backdrop */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="relative w-full h-full">
+          {/* Main floating logos across the entire page */}
+          {backdropStocks.map((stock, index) => (
+            <div
+              key={`backdrop-${stock.symbol}`}
+              className="absolute animate-float"
+              style={{
+                left: `${5 + (index * 6) % 90}%`,
+                top: `${10 + (index * 8) % 80}%`,
+                animationDelay: `${index * 1.5}s`,
+                animationDuration: `${12 + index * 1.5}s`,
+                opacity: 0.08,
+                transform: `scale(${0.7 + (index % 4) * 0.15})`
+              }}
+            >
+              <CompanyLogoWithFallback
+                symbol={stock.symbol}
+                companyName={stock.name}
+                size="w-14 h-14"
+              />
+            </div>
+          ))}
+          
+          {/* Additional floating elements for more variety */}
+          {backdropStocks.slice(0, 8).map((stock, index) => (
+            <div
+              key={`backdrop-extra-${stock.symbol}`}
+              className="absolute animate-float-reverse"
+              style={{
+                left: `${15 + (index * 10) % 70}%`,
+                top: `${60 + (index * 12) % 35}%`,
+                animationDelay: `${index * 2 + 8}s`,
+                animationDuration: `${18 + index * 2}s`,
+                opacity: 0.06,
+                transform: `scale(${0.5 + (index % 3) * 0.2})`
+              }}
+            >
+              <CompanyLogoWithFallback
+                symbol={stock.symbol}
+                companyName={stock.name}
+                size="w-10 h-10"
+              />
+            </div>
+          ))}
 
-      {/* Live Market Ticker */}
-      <div className="container mx-auto px-4 py-8">
-        <LiveStockTicker />
+          {/* Small floating elements for extra density */}
+          {backdropStocks.slice(0, 12).map((stock, index) => (
+            <div
+              key={`backdrop-small-${stock.symbol}`}
+              className="absolute animate-float"
+              style={{
+                left: `${20 + (index * 8) % 60}%`,
+                top: `${30 + (index * 6) % 50}%`,
+                animationDelay: `${index * 3 + 12}s`,
+                animationDuration: `${25 + index * 1}s`,
+                opacity: 0.04,
+                transform: `scale(${0.4 + (index % 2) * 0.1})`
+              }}
+            >
+              <CompanyLogoWithFallback
+                symbol={stock.symbol}
+                companyName={stock.name}
+                size="w-8 h-8"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Popular Stocks */}
-      <PopularStocks />
-
-      {/* Features Section */}
-      <section className="py-16 bg-gradient-to-br from-muted/20 to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              Powerful Stock Analysis Tools
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Everything you need to analyze stocks and make informed investment decisions
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header Section */}
+        <section className="w-full flex flex-col items-center justify-center py-12 bg-background relative">
+          {/* Header backdrop logos */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {backdropStocks.slice(0, 10).map((stock, index) => (
+              <div
+                key={`header-backdrop-${stock.symbol}`}
+                className="absolute animate-float"
+                style={{
+                  left: `${20 + (index * 7) % 60}%`,
+                  top: `${15 + (index * 10) % 70}%`,
+                  animationDelay: `${index * 2}s`,
+                  animationDuration: `${15 + index * 2}s`,
+                  opacity: 0.05,
+                  transform: `scale(${0.6 + (index % 3) * 0.2})`
+                }}
+              >
+                <CompanyLogoWithFallback
+                  symbol={stock.symbol}
+                  companyName={stock.name}
+                  size="w-12 h-12"
+                />
+              </div>
+            ))}
+            
+            {/* Additional header backdrop elements */}
+            {backdropStocks.slice(5, 12).map((stock, index) => (
+              <div
+                key={`header-backdrop-extra-${stock.symbol}`}
+                className="absolute animate-float-reverse"
+                style={{
+                  left: `${10 + (index * 8) % 80}%`,
+                  top: `${25 + (index * 8) % 60}%`,
+                  animationDelay: `${index * 3 + 5}s`,
+                  animationDuration: `${20 + index * 1.5}s`,
+                  opacity: 0.03,
+                  transform: `scale(${0.4 + (index % 2) * 0.15})`
+                }}
+              >
+                <CompanyLogoWithFallback
+                  symbol={stock.symbol}
+                  companyName={stock.name}
+                  size="w-8 h-8"
+                />
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mb-8 relative z-10">
+            <h1 className="text-5xl md:text-7xl font-black text-gradient mb-6 animate-pulse-slow">
+              Stonks
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto font-medium">
+              Real-time stock data and market insights
             </p>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="card-matte hover:bg-accent transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="icon-rounded">
-                    <TrendingUp className="h-6 w-6 text-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Real-time Data</h3>
+        {/* Search Bar Section */}
+        <section className="container mx-auto px-4 py-8">
+          <Card className="card-matte max-w-2xl mx-auto">
+            <CardHeader className="text-center pb-6">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="icon-rounded">
+                  <Search className="h-6 w-6 text-gradient" />
                 </div>
-                <p className="text-muted-foreground">
-                  Live stock prices, volume, and market data updated in real-time from Alpha Vantage API
-                </p>
-              </CardContent>
-            </Card>
+                <CardTitle className="text-2xl font-bold text-gradient">
+                  Search Stocks
+                </CardTitle>
+              </div>
+              <p className="text-muted-foreground font-medium">
+                Search by stock symbol or company name
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search by symbol (AAPL) or company name (Apple)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  onFocus={() => setShowSuggestions(suggestions.length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  className="input-matte h-14 text-lg font-medium"
+                />
+                
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg z-50 max-h-64 overflow-y-auto">
+                    {suggestions.map((stock, index) => (
+                      <div
+                        key={`${stock.symbol}-${index}`}
+                        onClick={() => handleSuggestionClick(stock)}
+                        className="flex items-center justify-between p-3 hover:bg-accent cursor-pointer transition-colors border-b border-border last:border-b-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <CompanyLogoWithFallback
+                            symbol={stock.symbol}
+                            companyName={stock.name}
+                            size="w-8 h-8"
+                          />
+                          <div>
+                            <div className="text-foreground font-semibold">{stock.symbol}</div>
+                            <div className="text-muted-foreground text-sm">{stock.name}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <Button
+                onClick={() => handleSearch()}
+                disabled={!searchQuery.trim()}
+                className="w-full h-14 btn-matte text-lg font-semibold"
+              >
+                Search Stocks
+              </Button>
+            </CardContent>
+          </Card>
 
-            <Card className="card-matte hover:bg-accent transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="icon-rounded">
-                    <BarChart3 className="h-6 w-6 text-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Technical Analysis</h3>
+          {/* Popular Stocks Small Tiles */}
+          <div className="max-w-2xl mx-auto mt-6">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+              {popularStocks.map((stock) => (
+                <div
+                  key={stock.symbol}
+                  onClick={() => handleStockClick({ symbol: stock.symbol, name: stock.name })}
+                  className="flex flex-col items-center p-3 card-matte hover:bg-accent cursor-pointer transition-all duration-300 group"
+                >
+                  <CompanyLogoWithFallback
+                    symbol={stock.symbol}
+                    companyName={stock.name}
+                    size="w-8 h-8"
+                  />
                 </div>
-                <p className="text-muted-foreground">
-                  Professional charts with historical data, moving averages, and technical indicators
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="card-matte hover:bg-accent transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="icon-rounded">
-                    <Database className="h-6 w-6 text-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Company Profiles</h3>
-                </div>
-                <p className="text-muted-foreground">
-                  Detailed company information, financial metrics, and market capitalization data
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="card-matte hover:bg-accent transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="icon-rounded">
-                    <Activity className="h-6 w-6 text-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Live Ticker</h3>
-                </div>
-                <p className="text-muted-foreground">
-                  Real-time market ticker showing live prices and changes for popular stocks
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="card-matte hover:bg-accent transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="icon-rounded">
-                    <ChartLine className="h-6 w-6 text-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Interactive Charts</h3>
-                </div>
-                <p className="text-muted-foreground">
-                  Interactive candlestick charts with multiple timeframes and technical indicators
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="card-matte hover:bg-accent transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="icon-rounded">
-                    <Shield className="h-6 w-6 text-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Market News</h3>
-                </div>
-                <p className="text-muted-foreground">
-                  Latest news and market updates to stay informed about market movements
-                </p>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/10 to-primary/5">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
-            Start Analyzing Stocks Today
-          </h2>
-          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-            Get real-time data, professional charts, and comprehensive analysis for any stock
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={() => navigate('/all-stocks')} 
-              className="btn-matte text-lg px-8 py-3"
-            >
-              Browse All Stocks
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-            <Button 
-              onClick={() => navigate('/how-it-works')} 
-              variant="outline"
-              className="btn-matte-outline text-lg px-8 py-3"
-            >
-              Learn More
-              <Lightbulb className="h-5 w-5 ml-2" />
-            </Button>
+        {/* Live Market Ticker Section (8 tiles) */}
+        <section className="container mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gradient mb-4 flex items-center justify-center gap-3">
+              <div className="icon-rounded">
+                <Activity className="h-8 w-8 text-gradient" />
+              </div>
+              Live Market Ticker
+            </h2>
+            <p className="text-muted-foreground text-lg font-medium">
+              Real-time market data for popular stocks
+            </p>
           </div>
-        </div>
-      </section>
-    </div>
-  );
-};
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {tickerStocks.map((stock) => {
+              const { data: stockData, isLoading, error } = useGoogleSheetsStockData();
+              const stockInfo = stockData?.find(s => s.symbol === stock.symbol);
+              const parsedData = stockInfo ? parseStockData(stockInfo) : null;
+              
+              return (
+                <Card
+                  key={stock.symbol}
+                  className="card-matte hover:bg-accent cursor-pointer transition-all duration-300 group"
+                  onClick={() => handleStockClick({ symbol: stock.symbol, name: stock.name })}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <CompanyLogoWithFallback
+                        symbol={stock.symbol}
+                        companyName={stock.name}
+                        size="w-10 h-10"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-foreground">{stock.symbol}</h3>
+                        <div className="text-muted-foreground text-xs truncate">{stock.name}</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground text-xs">Price</span>
+                        <span className="text-foreground font-medium text-sm">
+                          {isLoading ? 'Loading...' : parsedData ? formatPrice(parsedData.price) : '-'}
+                        </span>
+                      </div>
+
+                      {parsedData && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground text-xs">Change</span>
+                          <div className={`flex items-center gap-1 ${
+                            parsedData.isPositive ? 'text-green-500' : 
+                            parsedData.isNegative ? 'text-red-500' : 'text-muted-foreground'
+                          }`}>
+                            {getChangeIcon(parsedData.change)}
+                            <span className="text-xs font-medium">
+                              {parsedData.isPositive ? '+' : ''}{parsedData.change.toFixed(2)}%
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+                 {/* Footer Section */}
+         <footer className="bg-muted/20 py-12 mt-16 relative overflow-hidden">
+           {/* Footer backdrop particles */}
+           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+             {backdropStocks.slice(0, 6).map((stock, index) => (
+               <div
+                 key={`footer-backdrop-${stock.symbol}`}
+                 className="absolute animate-float"
+                 style={{
+                   left: `${10 + (index * 15) % 80}%`,
+                   top: `${20 + (index * 12) % 60}%`,
+                   animationDelay: `${index * 4}s`,
+                   animationDuration: `${25 + index * 3}s`,
+                   opacity: 0.03,
+                   transform: `scale(${0.3 + (index % 2) * 0.1})`
+                 }}
+               >
+                 <CompanyLogoWithFallback
+                   symbol={stock.symbol}
+                   companyName={stock.name}
+                   size="w-6 h-6"
+                 />
+               </div>
+             ))}
+           </div>
+           
+           <div className="container mx-auto px-4 text-center relative z-10">
+             <div className="flex flex-col items-center gap-6">
+               <div className="flex items-center gap-6">
+                 <a
+                   href="https://github.com/dhruv0312"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="flex items-center gap-3 text-muted-foreground hover:text-gradient transition-all duration-300 group"
+                 >
+                   <div className="icon-rounded group-hover:scale-110 transition-transform">
+                     <Github className="h-6 w-6" />
+                   </div>
+                   <span className="font-medium">GitHub</span>
+                 </a>
+                 <a
+                   href="https://www.linkedin.com/in/dhruv0312"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="flex items-center gap-3 text-muted-foreground hover:text-gradient transition-all duration-300 group"
+                 >
+                   <div className="icon-rounded group-hover:scale-110 transition-transform">
+                     <Linkedin className="h-6 w-6" />
+                   </div>
+                   <span className="font-medium">LinkedIn</span>
+                 </a>
+               </div>
+               <div className="text-muted-foreground text-lg">
+                 Made by <span className="font-bold text-gradient">Dhruv</span>
+               </div>
+             </div>
+           </div>
+         </footer>
+      </div>
+
+           </div>
+   );
+ };
 
 export default Index;

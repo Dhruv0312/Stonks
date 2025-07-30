@@ -5,7 +5,6 @@ import {
   Brain, 
   Database, 
   Cpu, 
-  ChartLine, 
   TrendingUp, 
   Shield, 
   Zap, 
@@ -30,107 +29,107 @@ const HowItWorks = () => {
     {
       step: "01",
       icon: Database,
-      title: "Real Data Collection",
-      description: "Gathering authentic market data from reliable financial APIs",
+      title: "Google Sheets Integration",
+      description: "Direct access to your curated stock data from Google Sheets",
       details: [
         {
-          title: "Historical Price Data",
-          description: "30+ days of real stock prices from Alpha Vantage API",
-          features: ["Open, Close, High, Low prices", "Trading volume data", "Real-time updates", "Market hours data"]
+          title: "Watchlist Data",
+          description: "Real stock prices and market data from your Google Sheets",
+          features: ["Current stock prices", "Price change tracking", "Company information", "Real-time updates"]
         },
         {
-          title: "Live Market Feeds",
-          description: "Current stock prices and market movements",
-          features: ["Real-time price updates", "Live trading volume", "Market depth information", "Price change tracking"]
+          title: "Technical Analysis Data",
+          description: "RSI and MACD indicators calculated from your data",
+          features: ["RSI values for momentum", "MACD line and signal", "Histogram patterns", "Technical insights"]
         },
         {
-          title: "News & Announcements",
-          description: "Recent news headlines affecting each stock",
-          features: ["Earnings announcements", "Company news", "Market sentiment", "Economic indicators"]
+          title: "Custom Data Management",
+          description: "Your own curated stock database and analysis",
+          features: ["Personal watchlist", "Custom calculations", "Data ownership", "Flexible updates"]
         }
       ]
     },
     {
       step: "02",
-      icon: ChartLine,
-      title: "Technical Analysis",
-      description: "Advanced mathematical calculations using proven technical indicators",
+             icon: BarChart3,
+      title: "Technical Analysis Display",
+      description: "Real-time display of RSI and MACD indicators from your Google Sheets",
       details: [
         {
           title: "RSI (Relative Strength Index)",
-          description: "Measures momentum and identifies overbought/oversold conditions",
-          features: ["14-day calculation period", "Oversold signals (<30)", "Overbought signals (>70)", "Momentum analysis"]
+          description: "Displays momentum and overbought/oversold conditions from your data",
+          features: ["Real RSI values", "Overbought signals (>70)", "Oversold signals (<30)", "Momentum analysis"]
         },
         {
           title: "MACD (Moving Average Convergence)",
-          description: "Identifies trend changes and momentum shifts",
-          features: ["12/26 day EMAs", "Signal line analysis", "Histogram patterns", "Trend confirmation"]
+          description: "Shows trend changes and momentum shifts from your calculations",
+          features: ["MACD line values", "Signal line analysis", "Histogram patterns", "Trend confirmation"]
         },
         {
-          title: "Moving Averages",
-          description: "SMA20 and SMA50 for trend identification",
-          features: ["20-day simple moving average", "50-day simple moving average", "Golden/Death cross signals", "Support/resistance levels"]
+          title: "Price Action Analysis",
+          description: "Real-time price changes and percentage movements",
+          features: ["Current price display", "Price change tracking", "Percentage calculations", "Visual indicators"]
         },
         {
-          title: "Bollinger Bands",
-          description: "Volatility and potential reversal point analysis",
-          features: ["20-day SMA with 2 standard deviations", "Upper and lower bands", "Squeeze detection", "Breakout signals"]
+          title: "Technical Summary",
+          description: "Comprehensive analysis of your stock data",
+          features: ["Buy/sell signals", "Technical insights", "Risk assessment", "Market analysis"]
         }
       ]
     },
     {
       step: "03",
       icon: Brain,
-      title: "AI-Powered Insights",
-      description: "Free AI services analyze sentiment and market conditions",
+      title: "Real-Time Data Processing",
+      description: "Instant processing and display of your Google Sheets data",
       details: [
         {
-          title: "News Sentiment Analysis",
-          description: "Client-side analysis of news headlines for sentiment",
-          features: ["Positive/negative word detection", "Sentiment scoring", "News impact assessment", "Free processing"]
+          title: "Live Data Updates",
+          description: "Real-time synchronization with your Google Sheets",
+          features: ["Automatic data refresh", "Live price updates", "Instant calculations", "Seamless integration"]
         },
         {
-          title: "Risk Assessment",
-          description: "AI evaluation of market risk based on technical indicators",
-          features: ["Volatility analysis", "Risk level classification", "Market condition assessment", "Factor identification"]
+          title: "Data Validation",
+          description: "Ensuring data integrity and accuracy",
+          features: ["Error handling", "Data verification", "Format validation", "Quality checks"]
         },
         {
-          title: "Market Conditions",
-          description: "AI summary of current market environment",
-          features: ["Technical summary", "Sentiment overview", "Key factor identification", "Market state description"]
+          title: "Performance Optimization",
+          description: "Fast and efficient data processing",
+          features: ["Caching mechanisms", "Optimized queries", "Quick loading", "Responsive interface"]
         },
         {
-          title: "Confidence Scoring",
-          description: "Combined AI and technical confidence assessment",
-          features: ["Multi-factor analysis", "Confidence percentage", "Reasoning breakdown", "Risk-adjusted scoring"]
+          title: "User Experience",
+          description: "Smooth and intuitive data presentation",
+          features: ["Clean interface", "Easy navigation", "Visual indicators", "Mobile responsive"]
         }
       ]
     },
     {
       step: "04",
       icon: Target,
-      title: "Smart Predictions",
-      description: "Combining technical analysis with AI insights for accurate forecasts",
+      title: "Interactive Dashboard",
+      description: "Comprehensive view of your stock data with technical analysis insights",
       details: [
         {
-          title: "Direction Prediction",
-          description: "Up/Down/Neutral predictions based on combined analysis",
-          features: ["Technical signal analysis", "AI sentiment integration", "Confidence weighting", "Multi-timeframe analysis"]
+          title: "Stock Overview",
+          description: "Complete view of stock information and performance",
+          features: ["Price overview", "Technical indicators", "Company information", "Performance metrics"]
         },
         {
-          title: "Price Targets",
-          description: "Predicted price ranges for different timeframes",
-          features: ["1-day predictions", "7-day forecasts", "30-day projections", "Support/resistance levels"]
+          title: "Technical Analysis",
+          description: "Detailed technical analysis with buy/sell signals",
+          features: ["RSI analysis", "MACD signals", "Price action", "Technical summary"]
         },
         {
-          title: "Detailed Reasoning",
-          description: "Clear explanation of prediction factors and logic",
-          features: ["Technical indicator signals", "AI insight summary", "Key factor identification", "Risk considerations"]
+          title: "Data Visualization",
+          description: "Clear and intuitive presentation of your data",
+          features: ["Visual indicators", "Color-coded signals", "Interactive elements", "Responsive design"]
         },
         {
-          title: "Real-time Updates",
-          description: "Predictions update automatically with new data",
-          features: ["Live data integration", "Automatic recalculation", "Market condition updates", "Continuous monitoring"]
+          title: "Real-time Monitoring",
+          description: "Live tracking of your stock portfolio",
+          features: ["Live ticker", "Auto-refresh", "Instant updates", "Portfolio tracking"]
         }
       ]
     }
@@ -138,27 +137,27 @@ const HowItWorks = () => {
 
   const technicalIndicators = [
     {
-      category: "Momentum Indicators",
+      category: "Primary Indicators",
       indicators: [
-        { name: "RSI (Relative Strength Index)", description: "Measures speed and magnitude of price changes to identify overbought/oversold conditions", formula: "RSI = 100 - (100 / (1 + RS))" },
-        { name: "MACD (Moving Average Convergence Divergence)", description: "Shows relationship between two moving averages to identify trend changes", formula: "MACD = 12-day EMA - 26-day EMA" },
-        { name: "Momentum", description: "Rate of price change over a specific period", formula: "Momentum = Current Price - Price n periods ago" }
+        { name: "RSI (Relative Strength Index)", description: "Measures momentum and identifies overbought/oversold conditions from your data", formula: "RSI = 100 - (100 / (1 + RS))" },
+        { name: "MACD (Moving Average Convergence Divergence)", description: "Shows trend changes and momentum shifts from your calculations", formula: "MACD = 12-day EMA - 26-day EMA" },
+        { name: "MACD Signal", description: "Signal line for MACD crossover analysis", formula: "Signal = 9-day EMA of MACD" }
       ]
     },
     {
-      category: "Trend Indicators",
+      category: "Price Analysis",
       indicators: [
-        { name: "SMA (Simple Moving Average)", description: "Average price over a specific period to identify trend direction", formula: "SMA = Sum of prices / Number of periods" },
-        { name: "EMA (Exponential Moving Average)", description: "Weighted average that gives more importance to recent prices", formula: "EMA = Price × K + EMA(prev) × (1-K)" },
-        { name: "Bollinger Bands", description: "Volatility bands placed above and below a moving average", formula: "Upper Band = SMA + (2 × Standard Deviation)" }
+        { name: "Current Price", description: "Real-time stock price from your Google Sheets", formula: "Price = Latest market price" },
+        { name: "Price Change", description: "Absolute change in price from previous close", formula: "Change = Current Price - Previous Close" },
+        { name: "Percentage Change", description: "Relative change expressed as percentage", formula: "% Change = (Change / Previous Close) × 100" }
       ]
     },
     {
-      category: "Volume Indicators",
+      category: "Data Integration",
       indicators: [
-        { name: "Volume Analysis", description: "Trading volume to confirm price movements and trends", formula: "Volume confirmation = Price direction + Volume increase" },
-        { name: "Volume Moving Average", description: "Average volume over time to identify unusual activity", formula: "Volume MA = Sum of volumes / Number of periods" },
-        { name: "Volume Price Trend", description: "Cumulative volume adjusted for price changes", formula: "VPT = Previous VPT + Volume × (Current Price - Previous Price) / Previous Price" }
+        { name: "Google Sheets Sync", description: "Real-time synchronization with your data", formula: "Auto-refresh every 60 seconds" },
+        { name: "Data Validation", description: "Ensuring data integrity and format", formula: "Error handling + format validation" },
+        { name: "Live Updates", description: "Instant display of your latest data", formula: "Real-time processing + caching" }
       ]
     }
   ];
@@ -166,27 +165,27 @@ const HowItWorks = () => {
   const benefits = [
     {
       icon: DollarSign,
-      title: "100% Free",
-      description: "No paid subscriptions, API costs, or hidden fees. All analysis is completely free.",
-      features: ["Free data sources", "Free AI processing", "No premium tiers", "Transparent pricing"]
+      title: "Your Data, Your Control",
+      description: "Complete ownership of your stock data and analysis. No external dependencies.",
+      features: ["Google Sheets integration", "Data ownership", "Custom calculations", "Personal control"]
     },
     {
       icon: Database,
-      title: "Real Data Only",
-      description: "No simulated or fake data. Everything is based on actual market information.",
-      features: ["Live market feeds", "Historical price data", "Real news sources", "Authentic calculations"]
+      title: "Real Technical Analysis",
+      description: "Authentic RSI and MACD indicators from your curated data.",
+      features: ["Real RSI values", "Live MACD data", "Technical insights", "Accurate calculations"]
     },
     {
       icon: Zap,
       title: "Real-time Updates",
-      description: "Predictions update automatically as market conditions change.",
-      features: ["Live data integration", "Instant recalculation", "Market condition updates", "Continuous monitoring"]
+      description: "Data updates automatically as your Google Sheets change.",
+      features: ["Live data sync", "Instant updates", "Auto-refresh", "Continuous monitoring"]
     },
     {
       icon: Shield,
       title: "Transparent Process",
-      description: "See exactly how predictions are calculated with detailed reasoning.",
-      features: ["Clear explanations", "Factor breakdown", "Confidence scoring", "Risk assessment"]
+      description: "See exactly how your data is processed and displayed.",
+      features: ["Clear data flow", "Source transparency", "Real-time processing", "Data validation"]
     }
   ];
 
@@ -203,10 +202,10 @@ const HowItWorks = () => {
             How It Works
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Discover how we combine real market data, advanced technical analysis, and free AI services to provide accurate stock predictions
+            Discover how we integrate your Google Sheets data with real-time technical analysis to provide comprehensive stock insights
           </p>
           <Button 
-            onClick={() => navigate('/dashboard')}
+                            onClick={() => navigate('/all-stocks')}
             className="btn-primary text-lg px-8 py-4 font-semibold transition-all duration-300"
           >
             Try It Now
@@ -221,7 +220,7 @@ const HowItWorks = () => {
               The Prediction Process
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Our four-step process transforms real market data into actionable investment insights
+              Our four-step process transforms your Google Sheets data into actionable investment insights
             </p>
           </div>
 
@@ -293,7 +292,7 @@ const HowItWorks = () => {
               Technical Analysis Indicators
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Advanced mathematical formulas and proven technical indicators power our analysis
+              RSI and MACD indicators from your Google Sheets power our technical analysis
             </p>
           </div>
 
@@ -332,7 +331,7 @@ const HowItWorks = () => {
               Why Choose Our Platform?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Experience the advantages of our real data, technical analysis, and free AI approach
+              Experience the advantages of our Google Sheets integration and real-time technical analysis
             </p>
           </div>
 
@@ -379,15 +378,15 @@ const HowItWorks = () => {
                 Ready to Start Analyzing Stocks?
               </h2>
               <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-                Begin your journey with our free, AI-powered stock analysis platform
+                Begin your journey with our Google Sheets-powered stock analysis platform
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/all-stocks')}
                   className="btn-primary text-lg px-8 py-4 font-semibold transition-all duration-300"
                 >
                   <Brain className="w-5 h-5 mr-2" />
-                  Start Free Analysis
+                  Start Analysis
                 </Button>
                 <Button 
                   onClick={() => navigate('/')}

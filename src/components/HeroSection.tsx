@@ -26,7 +26,7 @@ const HeroSection = () => {
           Stonks
         </h1>
         <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-          Real-time stock data, professional charts, and market insights
+                      Real-time stock data and market insights
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 

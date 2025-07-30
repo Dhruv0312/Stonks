@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useStockQuote } from "@/hooks/useAlphaVantage";
+import { useGoogleSheetsStockQuote, parseStockData } from "@/hooks/useGoogleSheetsStockData";
 import { TrendingUp, TrendingDown, Minus, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -19,7 +19,8 @@ const LiveStockTicker = () => {
 
   // Only fetch data for the currently visible stock
   const currentStock = tickerStocks[currentIndex];
-  const { data: quote, isLoading, error } = useStockQuote(currentStock.symbol);
+  const { data: stockData, isLoading, error } = useGoogleSheetsStockQuote(currentStock.symbol);
+  const parsedData = stockData ? parseStockData(stockData) : null;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,23 +56,23 @@ const LiveStockTicker = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            {error ? (
-              <div className="text-orange-500 text-sm flex items-center gap-1">
-                <Activity className="h-4 w-4" />
-                Rate Limited
-              </div>
-            ) : (
+                         {error ? (
+               <div className="text-orange-500 text-sm flex items-center gap-1">
+                 <Activity className="h-4 w-4" />
+                 Data Unavailable
+               </div>
+             ) : (
               <>
                 <div className="text-foreground font-bold text-lg">
-                  {isLoading ? 'Loading...' : quote ? `$${quote.c.toFixed(2)}` : '-'}
+                  {isLoading ? 'Loading...' : parsedData ? `$${parsedData.price.toFixed(2)}` : '-'}
                 </div>
-                {quote && (
+                {parsedData && (
                   <div className={`flex items-center gap-1 text-sm font-medium ${
-                    quote.d > 0 ? 'text-green-500' : quote.d < 0 ? 'text-red-500' : 'text-muted-foreground'
+                    parsedData.isPositive ? 'text-green-500' : parsedData.isNegative ? 'text-red-500' : 'text-muted-foreground'
                   }`}>
-                    {getChangeIcon(quote.d)}
+                    {getChangeIcon(parsedData.change)}
                     <span>
-                      {quote.d > 0 ? '+' : ''}{quote.d.toFixed(2)} ({quote.dp.toFixed(2)}%)
+                      {parsedData.isPositive ? '+' : ''}{parsedData.change.toFixed(2)} ({parsedData.changePercent.toFixed(2)}%)
                     </span>
                   </div>
                 )}
