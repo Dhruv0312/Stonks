@@ -1,7 +1,7 @@
 // Simple Google Sheets API service
 // Using Google Sheets API v4 with API key for public sheets
 
-const API_KEY = 'YOUR_GOOGLE_SHEETS_API_KEY_HERE'; // Replace with your actual API key from Google Cloud Console
+const API_KEY = 'AIzaSyBANy06jI96BJZYS5PBhrhK3bhoNsfWwZ0';
 const SPREADSHEET_ID = '10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY';
 
 class GoogleSheetsAPI {
