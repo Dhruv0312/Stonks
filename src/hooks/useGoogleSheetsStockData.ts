@@ -20,7 +20,10 @@ interface TechnicalData {
 
 // Fetch stock data from Google Sheets
 const fetchStockData = async (): Promise<StockData[]> => {
-  const response = await fetch('http://localhost:3001/api/sheets/10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY/read?range=Watchlist!A:H');
+  const baseURL = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001/api' 
+    : '/api';
+  const response = await fetch(`${baseURL}/sheets/10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY/read?range=Watchlist!A:H`);
   const result = await response.json();
   
   if (!result.values) {
@@ -42,12 +45,16 @@ const fetchStockData = async (): Promise<StockData[]> => {
 // Fetch technical data from Google Sheets
 const fetchTechnicalData = async (): Promise<TechnicalData[]> => {
   try {
+    const baseURL = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+      ? 'http://localhost:3001/api' 
+      : '/api';
+    
     // Fetch RSI data
-    const rsiResponse = await fetch('http://localhost:3001/api/sheets/10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY/read?range=Latest%20RSI!A:B');
+    const rsiResponse = await fetch(`${baseURL}/sheets/10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY/read?range=Latest%20RSI!A:B`);
     const rsiResult = await rsiResponse.json();
     
     // Fetch MACD data
-    const macdResponse = await fetch('http://localhost:3001/api/sheets/10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY/read?range=Latest%20MACD!A:D');
+    const macdResponse = await fetch(`${baseURL}/sheets/10F2ON8N3phmbvKQNQFfKet44XoytFxA3SgUiIlHl6VY/read?range=Latest%20MACD!A:D`);
     const macdResult = await macdResponse.json();
 
     const rsiData = rsiResult.values ? rsiResult.values.slice(1).map((row: any[]) => ({

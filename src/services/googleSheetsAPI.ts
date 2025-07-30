@@ -25,9 +25,12 @@ export class GoogleSheetsAPIService {
   private spreadsheetId: string;
   private baseURL: string;
 
-  constructor(spreadsheetId: string, baseURL: string = 'http://localhost:3001/api') {
+  constructor(spreadsheetId: string, baseURL?: string) {
     this.spreadsheetId = spreadsheetId;
-    this.baseURL = baseURL;
+    // Use environment variable for production, fallback to localhost for development
+    this.baseURL = baseURL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+      ? 'http://localhost:3001/api' 
+      : '/api');
   }
 
   // API calls - requires backend server to be running
