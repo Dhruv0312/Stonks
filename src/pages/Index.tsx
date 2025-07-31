@@ -16,8 +16,6 @@ const Index = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-
-  
   // Get stock data from Google Sheets
   const { data: stockData, isLoading: dataLoading } = useStockData();
   
@@ -340,18 +338,18 @@ const Index = () => {
             </p>
           </div>
           
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-             {tickerStocks.map((stock) => {
-               // Use the parsed stock data directly from stockDatabase
-               const stockInfo = stockDatabase.find(s => s.symbol === stock.symbol);
-               
-               const parsedData = stockInfo ? {
-                 price: parseFloat(stockInfo.price?.replace(/[$,]/g, '') || '0'),
-                 change: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0'),
-                 changePercent: parseFloat(stockInfo.changePercent?.replace(/[+%,]/g, '') || '0'),
-                 isPositive: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0') > 0,
-                 isNegative: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0') < 0,
-               } : null;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {tickerStocks.map((stock) => {
+              // Use the parsed stock data directly from stockDatabase
+              const stockInfo = stockDatabase.find(s => s.symbol === stock.symbol);
+              
+              const parsedData = stockInfo ? {
+                price: parseFloat(stockInfo.price?.replace(/[$,]/g, '') || '0'),
+                change: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0'),
+                changePercent: parseFloat(stockInfo.changePercent?.replace(/[+%,]/g, '') || '0'),
+                isPositive: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0') > 0,
+                isNegative: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0') < 0,
+              } : null;
               
               return (
                 <Card
@@ -402,68 +400,67 @@ const Index = () => {
           </div>
         </section>
 
-                 {/* Footer Section */}
-         <footer className="bg-muted/20 py-12 mt-16 relative overflow-hidden">
-           {/* Footer backdrop particles */}
-           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-             {backdropStocks.slice(0, 6).map((stock, index) => (
-               <div
-                 key={`footer-backdrop-${stock.symbol}`}
-                 className="absolute animate-float"
-                 style={{
-                   left: `${10 + (index * 15) % 80}%`,
-                   top: `${20 + (index * 12) % 60}%`,
-                   animationDelay: `${index * 4}s`,
-                   animationDuration: `${25 + index * 3}s`,
-                   opacity: 0.03,
-                   transform: `scale(${0.3 + (index % 2) * 0.1})`
-                 }}
-               >
-                 <CompanyLogoWithFallback
-                   symbol={stock.symbol}
-                   companyName={stock.name}
-                   size="w-6 h-6"
-                 />
-               </div>
-             ))}
-           </div>
-           
-           <div className="container mx-auto px-4 text-center relative z-10">
-             <div className="flex flex-col items-center gap-6">
-               <div className="flex items-center gap-6">
-                 <a
-                   href="https://github.com/dhruv0312"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="flex items-center gap-3 text-muted-foreground hover:text-gradient transition-all duration-300 group"
-                 >
-                   <div className="icon-rounded group-hover:scale-110 transition-transform">
-                     <Github className="h-6 w-6" />
-                   </div>
-                   <span className="font-medium">GitHub</span>
-                 </a>
-                 <a
-                   href="https://www.linkedin.com/in/dhruv0312"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="flex items-center gap-3 text-muted-foreground hover:text-gradient transition-all duration-300 group"
-                 >
-                   <div className="icon-rounded group-hover:scale-110 transition-transform">
-                     <Linkedin className="h-6 w-6" />
-                   </div>
-                   <span className="font-medium">LinkedIn</span>
-                 </a>
-               </div>
-               <div className="text-muted-foreground text-lg">
-                 Made by <span className="font-bold text-gradient">Dhruv</span>
-               </div>
-             </div>
-           </div>
-         </footer>
+        {/* Footer Section */}
+        <footer className="bg-muted/20 py-12 mt-16 relative overflow-hidden">
+          {/* Footer backdrop particles */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {backdropStocks.slice(0, 6).map((stock, index) => (
+              <div
+                key={`footer-backdrop-${stock.symbol}`}
+                className="absolute animate-float"
+                style={{
+                  left: `${10 + (index * 15) % 80}%`,
+                  top: `${20 + (index * 12) % 60}%`,
+                  animationDelay: `${index * 4}s`,
+                  animationDuration: `${25 + index * 3}s`,
+                  opacity: 0.03,
+                  transform: `scale(${0.3 + (index % 2) * 0.1})`
+                }}
+              >
+                <CompanyLogoWithFallback
+                  symbol={stock.symbol}
+                  companyName={stock.name}
+                  size="w-6 h-6"
+                />
+              </div>
+            ))}
+          </div>
+          
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex items-center gap-6">
+                <a
+                  href="https://github.com/dhruv0312"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-muted-foreground hover:text-gradient transition-all duration-300 group"
+                >
+                  <div className="icon-rounded group-hover:scale-110 transition-transform">
+                    <Github className="h-6 w-6" />
+                  </div>
+                  <span className="font-medium">GitHub</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/dhruv0312"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-muted-foreground hover:text-gradient transition-all duration-300 group"
+                >
+                  <div className="icon-rounded group-hover:scale-110 transition-transform">
+                    <Linkedin className="h-6 w-6" />
+                  </div>
+                  <span className="font-medium">LinkedIn</span>
+                </a>
+              </div>
+              <div className="text-muted-foreground text-lg">
+                Made by <span className="font-bold text-gradient">Dhruv</span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
-
-           </div>
-   );
- };
+    </div>
+  );
+};
 
 export default Index;
