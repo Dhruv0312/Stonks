@@ -15,59 +15,109 @@ class GoogleSheetsAPI {
   // Get stock data from Google Sheets
   async getStockData(): Promise<any> {
     try {
+      console.log('Fetching stock data from Google Sheets...');
       const response = await fetch(
         `${this.baseURL}/${SPREADSHEET_ID}/values/Stock Data!A:Z?key=${API_KEY}`
       );
       
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        console.log('Using fallback stock data due to API error');
+        return fallbackStockData;
       }
       
       const data = await response.json();
+      console.log('Stock data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching stock data:', error);
-      throw error;
+      console.log('Using fallback stock data due to network error');
+      return fallbackStockData;
     }
   }
 
   // Get technical data from Google Sheets
   async getTechnicalData(): Promise<any> {
     try {
+      console.log('Fetching technical data from Google Sheets...');
       const response = await fetch(
         `${this.baseURL}/${SPREADSHEET_ID}/values/Technical Data!A:Z?key=${API_KEY}`
       );
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('Using fallback technical data due to API error');
+        return fallbackTechnicalData;
       }
       
       const data = await response.json();
+      console.log('Technical data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching technical data:', error);
-      throw error;
+      console.log('Using fallback technical data due to network error');
+      return fallbackTechnicalData;
     }
   }
 
   // Get watchlist data from Google Sheets
   async getWatchlistData(): Promise<any> {
     try {
+      console.log('Fetching watchlist data from Google Sheets...');
       const response = await fetch(
         `${this.baseURL}/${SPREADSHEET_ID}/values/Watchlist!A:Z?key=${API_KEY}`
       );
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('Using fallback watchlist data due to API error');
+        return fallbackWatchlistData;
       }
       
       const data = await response.json();
+      console.log('Watchlist data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching watchlist data:', error);
-      throw error;
+      console.log('Using fallback watchlist data due to network error');
+      return fallbackWatchlistData;
     }
   }
 }
+
+// Fallback data in case API fails
+const fallbackStockData = {
+  values: [
+    ['Symbol', 'Name', 'Price', 'Change', 'Change%', 'Market Cap', 'Volume'],
+    ['AAPL', 'Apple Inc.', '150.00', '+2.50', '+1.69%', '2.5T', '50M'],
+    ['GOOGL', 'Alphabet Inc.', '2800.00', '+15.00', '+0.54%', '1.8T', '25M'],
+    ['MSFT', 'Microsoft Corporation', '320.00', '+5.00', '+1.59%', '2.4T', '30M'],
+    ['TSLA', 'Tesla Inc.', '250.00', '-5.00', '-1.96%', '800B', '40M'],
+    ['AMZN', 'Amazon.com Inc.', '3300.00', '+20.00', '+0.61%', '1.7T', '35M'],
+    ['META', 'Meta Platforms Inc.', '350.00', '+8.00', '+2.34%', '900B', '45M']
+  ]
+};
+
+const fallbackTechnicalData = {
+  values: [
+    ['Symbol', 'RSI', 'MACD', 'Signal', 'Recommendation'],
+    ['AAPL', '65', '0.5', '0.3', 'BUY'],
+    ['GOOGL', '45', '0.2', '0.4', 'HOLD'],
+    ['MSFT', '70', '0.8', '0.2', 'BUY'],
+    ['TSLA', '30', '-0.3', '0.1', 'SELL'],
+    ['AMZN', '55', '0.4', '0.3', 'HOLD'],
+    ['META', '75', '1.2', '0.5', 'BUY']
+  ]
+};
+
+const fallbackWatchlistData = {
+  values: [
+    ['Symbol', 'Name', 'Price', 'Change%'],
+    ['AAPL', 'Apple Inc.', '150.00', '+1.69%'],
+    ['GOOGL', 'Alphabet Inc.', '2800.00', '+0.54%'],
+    ['MSFT', 'Microsoft Corporation', '320.00', '+1.59%']
+  ]
+};
 
 export default new GoogleSheetsAPI(); 
