@@ -62,17 +62,15 @@ const Index = () => {
     { symbol: "DIS", name: "Walt Disney" }
   ];
 
-  // Live ticker stocks (8 stocks)
-  const tickerStocks = [
-    { symbol: "AAPL", name: "Apple" },
-    { symbol: "MSFT", name: "Microsoft" },
-    { symbol: "GOOGL", name: "Alphabet" },
-    { symbol: "AMZN", name: "Amazon" },
-    { symbol: "NVDA", name: "NVIDIA" },
-    { symbol: "TSLA", name: "Tesla" },
-    { symbol: "META", name: "Meta" },
-    { symbol: "NFLX", name: "Netflix" }
-  ];
+  // Live ticker stocks - show most popular companies that exist in the data
+  const popularSymbols = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "NFLX"];
+  const tickerStocks = popularSymbols
+    .map(symbol => {
+      const stock = stockDatabase.find(s => s.symbol === symbol);
+      return stock ? { symbol: stock.symbol, name: stock.name } : null;
+    })
+    .filter(Boolean) // Remove any null entries (stocks not found in data)
+    .slice(0, 8); // Limit to 8 stocks
 
   // Filter stocks based on search query
   useEffect(() => {
@@ -342,15 +340,18 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {tickerStocks.map((stock) => {
-              const stockInfo = stockData?.find(s => s.symbol === stock.symbol);
-              const parsedData = stockInfo ? {
-                price: stockInfo.price,
-                change: stockInfo.change,
-                isPositive: stockInfo.change > 0,
-                isNegative: stockInfo.change < 0,
-              } : null;
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+             {tickerStocks.map((stock) => {
+               // Use the parsed stock data directly from stockDatabase
+               const stockInfo = stockDatabase.find(s => s.symbol === stock.symbol);
+               
+               const parsedData = stockInfo ? {
+                 price: parseFloat(stockInfo.price?.replace(/[$,]/g, '') || '0'),
+                 change: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0'),
+                 changePercent: parseFloat(stockInfo.changePercent?.replace(/[+%,]/g, '') || '0'),
+                 isPositive: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0') > 0,
+                 isNegative: parseFloat(stockInfo.change?.replace(/[+%,]/g, '') || '0') < 0,
+               } : null;
               
               return (
                 <Card
@@ -388,7 +389,7 @@ const Index = () => {
                           }`}>
                             {getChangeIcon(parsedData.change)}
                             <span className="text-xs font-medium">
-                              {parsedData.isPositive ? '+' : ''}{parsedData.change.toFixed(2)}%
+                              {parsedData.isPositive ? '+' : ''}{parsedData.changePercent.toFixed(2)}%
                             </span>
                           </div>
                         </div>
