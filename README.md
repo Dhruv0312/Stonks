@@ -1,6 +1,6 @@
 # Stonks
 
-A modern stock market data platform providing real-time stock information and comprehensive market analysis powered by Google Sheets.
+A modern stock market data platform providing real-time stock information and comprehensive market analysis.
 
 ## Features
 
@@ -21,13 +21,6 @@ A modern stock market data platform providing real-time stock information and co
 - React Query
 - React Router DOM
 
-## Getting Started
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Start development server: `npm run dev`
-4. Open http://localhost:5173
-
 ## Data Sources
 
 - **Stock Data**: Google Sheets (Watchlist)
@@ -40,7 +33,6 @@ The application is deployed on Vercel and automatically updates when changes are
 
 ## Features
 
-- **Vibrant UI Design** - Modern, pixelos-inspired interface
 - **Responsive Design** - Works on desktop, tablet, and mobile
 - **Real-time Data** - Live stock prices and market data
 - **Technical Analysis** - RSI and MACD indicators with buy/sell recommendations
