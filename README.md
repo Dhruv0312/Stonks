@@ -1,24 +1,25 @@
 # Stonks
 
-A modern stock market data platform providing real-time stock information, professional charts, and comprehensive market analysis.
+A modern stock market data platform providing real-time stock information and comprehensive market analysis powered by Google Sheets.
 
 ## Features
 
-- **Real-time Stock Data** - Live prices and market data from Alpha Vantage API
-- **Interactive Charts** - Professional candlestick charts with multiple timeframes
+- **Real-time Stock Data** - Live prices and market data from Google Sheets
+- **Technical Analysis** - RSI and MACD indicators with trading recommendations
 - **Company Profiles** - Detailed company information and financial metrics
-- **Market News** - Latest news and market updates
 - **Live Market Ticker** - Real-time price updates for popular stocks
-- **Stock Search** - Search by symbol or company name
-- **All Stocks Page** - Browse complete stock database
+- **Stock Search** - Search by symbol or company name with autocomplete
+- **All Stocks Page** - Browse complete stock database with filtering options
+- **Stock Detail Pages** - Comprehensive analysis for individual stocks
 
 ## Tech Stack
 
 - React + TypeScript
 - Vite
 - Tailwind CSS
-- Alpha Vantage API
-- Polygon.io Charts
+- Google Sheets API
+- React Query
+- React Router DOM
 
 ## Getting Started
 
@@ -29,6 +30,19 @@ A modern stock market data platform providing real-time stock information, profe
 
 ## Data Sources
 
-- **Stock Data**: Alpha Vantage API
-- **Charts**: Polygon.io
-- **Company Information**: Alpha Vantage API
+- **Stock Data**: Google Sheets (Watchlist)
+- **Technical Indicators**: Google Sheets (Latest RSI, Latest MACD)
+- **Real-time Updates**: Automatic refresh every 30 seconds
+
+## Deployment
+
+The application is deployed on Vercel and automatically updates when changes are pushed to the main branch.
+
+## Features
+
+- **Vibrant UI Design** - Modern, pixelos-inspired interface
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **Real-time Data** - Live stock prices and market data
+- **Technical Analysis** - RSI and MACD indicators with buy/sell recommendations
+- **Search & Filter** - Find stocks by symbol or company name
+- **Market Overview** - Live ticker showing popular stocks
