@@ -45,15 +45,24 @@ const StockDetail = () => {
   const { data: allTechnicalData, isLoading: technicalLoading, error: technicalError } = useTechnicalData();
   
   // Filter data for the specific symbol
-  const stockData = allStockData?.find((stock: any) => stock.symbol === symbol);
-  const technicalData = allTechnicalData?.find((tech: any) => tech.symbol === symbol);
+  const stockData = allStockData && allStockData.length > 1 ? 
+    allStockData.slice(1).find((row: any[]) => row[0] === symbol) : null;
+  const technicalData = allTechnicalData && allTechnicalData.length > 1 ? 
+    allTechnicalData.slice(1).find((row: any[]) => row[0] === symbol) : null;
   
-  const parsedStockData = stockData ? parseStockData(stockData) : null;
+  const parsedStockData = stockData ? parseStockData({
+    symbol: stockData[0] || '',
+    name: stockData[1] || '',
+    price: stockData[3] || '0',
+    change: stockData[4] || '0',
+    changePercent: stockData[5] || '0%'
+  }) : null;
+  
   const parsedTechnicalData = technicalData ? {
-    rsi: parseFloat(technicalData.rsi || "0"),
-    macd: parseFloat(technicalData.macd || "0"),
-    macdSignal: parseFloat(technicalData.macdSignal || "0"),
-    macdHistogram: parseFloat(technicalData.macdHistogram || "0")
+    rsi: parseFloat(technicalData[1] || "0"),
+    macd: parseFloat(technicalData[2] || "0"),
+    macdSignal: parseFloat(technicalData[3] || "0"),
+    macdHistogram: parseFloat(technicalData[4] || "0")
   } : null;
 
   const getChangeIcon = (change: number) => {

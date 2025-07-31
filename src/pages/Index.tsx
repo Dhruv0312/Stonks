@@ -22,10 +22,14 @@ const Index = () => {
   const { data: stockData, isLoading: dataLoading } = useStockData();
   
   // Create stock database from Google Sheets data
-  const stockDatabase = stockData ? stockData.map(stock => ({
-    symbol: stock.symbol,
-    name: stock.volume || `${stock.symbol} Stock`, // Using volume field for company name
-    sector: "Technology" // Default sector since we don't have this data
+  const stockDatabase = stockData && stockData.length > 1 ? stockData.slice(1).map((row: any[]) => ({
+    symbol: row[0] || '', // First column is symbol
+    name: row[1] || '', // Second column is name
+    sector: row[2] || 'Technology', // Third column is sector
+    price: row[3] || '0',
+    change: row[4] || '0',
+    changePercent: row[5] || '0%',
+    marketCap: row[6] || '0'
   })) : [];
 
   // Popular stocks for display (6 stocks)

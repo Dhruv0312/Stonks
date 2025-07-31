@@ -119,26 +119,37 @@ const AllStocks = () => {
   };
 
   // Create stock database from Google Sheets data
-  const stockDatabase = stockData ? stockData.map(stock => {
+  const stockDatabase = stockData && stockData.length > 1 ? stockData.slice(1).map((row: any[]) => {
+    const stock = {
+      symbol: row[0] || '',
+      name: row[1] || '',
+      sector: row[2] || 'Technology',
+      price: row[3] || '0',
+      change: row[4] || '0',
+      changePercent: row[5] || '0%',
+      marketCap: row[6] || '0'
+    };
+    
     const parsedData = parseStockData(stock);
     
     // Find technical data for this stock
-    const techData = technicalData?.find(tech => tech.symbol === stock.symbol);
+    const techData = technicalData && technicalData.length > 1 ? 
+      technicalData.slice(1).find((techRow: any[]) => techRow[0] === stock.symbol) : null;
     let recommendation = "HOLD";
     
     if (techData) {
-      const rsi = parseFloat(techData.rsi || "0");
-      const macd = parseFloat(techData.macd || "0");
-      const macdSignal = parseFloat(techData.macdSignal || "0");
-      const macdHistogram = parseFloat(techData.macdHistogram || "0");
+      const rsi = parseFloat(techData[1] || "0");
+      const macd = parseFloat(techData[2] || "0");
+      const macdSignal = parseFloat(techData[3] || "0");
+      const macdHistogram = parseFloat(techData[4] || "0");
       
       recommendation = getOverallRecommendation(rsi, macd, macdSignal, macdHistogram);
     }
     
     return {
       symbol: stock.symbol,
-      name: stock.volume || `${stock.symbol} Stock`, // Using volume field for company name
-      sector: "Technology", // Default sector since we don't have this data
+      name: stock.name,
+      sector: stock.sector,
       marketCap: parsedData.marketCap || 0,
       recommendation: recommendation as "BUY" | "SELL" | "HOLD"
     };
