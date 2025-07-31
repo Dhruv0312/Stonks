@@ -23,13 +23,13 @@ const Index = () => {
   
   // Create stock database from Google Sheets data
   const stockDatabase = stockData && stockData.length > 1 ? stockData.slice(1).map((row: any[]) => ({
-    symbol: row[0] || '', // First column is symbol
-    name: row[1] || '', // Second column is name
-    sector: row[2] || 'Technology', // Third column is sector
-    price: row[3] || '0',
-    change: row[4] || '0',
-    changePercent: row[5] || '0%',
-    marketCap: row[6] || '0'
+    symbol: row[1] || '', // Column B
+    name: row[3] || '', // Column D
+    sector: 'Technology', // Default sector
+    price: row[4] || '0', // Column E
+    change: row[5] || '0', // Column F
+    changePercent: row[6] || '0%', // Column G
+    marketCap: row[7] || '0' // Column H
   })) : [];
 
   // Popular stocks for display (6 stocks)

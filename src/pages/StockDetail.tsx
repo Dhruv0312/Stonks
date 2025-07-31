@@ -47,18 +47,18 @@ const StockDetail = () => {
   
   // Filter data for the specific symbol
   const stockData = allStockData && allStockData.length > 1 ? 
-    allStockData.slice(1).find((row: any[]) => row[0] === symbol) : null;
+    allStockData.slice(1).find((row: any[]) => row[1] === symbol) : null;
   const rsiData = allRSIData && allRSIData.length > 1 ? 
     allRSIData.slice(1).find((row: any[]) => row[0] === symbol) : null;
   const macdData = allMACDData && allMACDData.length > 1 ? 
     allMACDData.slice(1).find((row: any[]) => row[0] === symbol) : null;
   
   const parsedStockData = stockData ? parseStockData({
-    symbol: stockData[0] || '',
-    name: stockData[1] || '',
-    price: stockData[3] || '0',
-    change: stockData[4] || '0',
-    changePercent: stockData[5] || '0%'
+    symbol: stockData[1] || '', // Column B
+    name: stockData[3] || '', // Column D
+    price: stockData[4] || '0', // Column E
+    change: stockData[5] || '0', // Column F
+    changePercent: stockData[6] || '0%' // Column G
   }) : null;
   
   const parsedTechnicalData = rsiData && macdData ? {
