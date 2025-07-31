@@ -17,7 +17,7 @@ class GoogleSheetsAPI {
     try {
       console.log('Fetching stock data from Google Sheets...');
       const response = await fetch(
-        `${this.baseURL}/${SPREADSHEET_ID}/values/Stock Data!A:Z?key=${API_KEY}`
+        `${this.baseURL}/${SPREADSHEET_ID}/values/Watchlist!A:Z?key=${API_KEY}`
       );
       
       console.log('Response status:', response.status);
@@ -31,6 +31,14 @@ class GoogleSheetsAPI {
       
       const data = await response.json();
       console.log('Stock data received:', data);
+      
+      // Log the number of rows
+      if (data.values) {
+        console.log(`Watchlist has ${data.values.length} rows total`);
+        console.log(`Watchlist has ${data.values.length - 1} data rows (excluding header)`);
+        console.log('First few rows:', data.values.slice(0, 5));
+      }
+      
       return data;
     } catch (error) {
       console.error('Error fetching stock data:', error);
@@ -44,7 +52,7 @@ class GoogleSheetsAPI {
     try {
       console.log('Fetching technical data from Google Sheets...');
       const response = await fetch(
-        `${this.baseURL}/${SPREADSHEET_ID}/values/Technical Data!A:Z?key=${API_KEY}`
+        `${this.baseURL}/${SPREADSHEET_ID}/values/Latest RSI!A:Z?key=${API_KEY}`
       );
       
       if (!response.ok) {
@@ -77,11 +85,50 @@ class GoogleSheetsAPI {
       
       const data = await response.json();
       console.log('Watchlist data received:', data);
+      
+      // Log the number of rows
+      if (data.values) {
+        console.log(`Watchlist has ${data.values.length} rows total`);
+        console.log(`Watchlist has ${data.values.length - 1} data rows (excluding header)`);
+        console.log('First few rows:', data.values.slice(0, 5));
+      }
+      
       return data;
     } catch (error) {
       console.error('Error fetching watchlist data:', error);
       console.log('Using fallback watchlist data due to network error');
       return fallbackWatchlistData;
+    }
+  }
+
+  // Get MACD data from Google Sheets
+  async getMACDData(): Promise<any> {
+    try {
+      console.log('Fetching MACD data from Google Sheets...');
+      const response = await fetch(
+        `${this.baseURL}/${SPREADSHEET_ID}/values/Latest MACD!A:Z?key=${API_KEY}`
+      );
+      
+      if (!response.ok) {
+        console.log('Using fallback MACD data due to API error');
+        return fallbackMACDData;
+      }
+      
+      const data = await response.json();
+      console.log('MACD data received:', data);
+      
+      // Log the number of rows
+      if (data.values) {
+        console.log(`Latest MACD has ${data.values.length} rows total`);
+        console.log(`Latest MACD has ${data.values.length - 1} data rows (excluding header)`);
+        console.log('First few rows:', data.values.slice(0, 5));
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching MACD data:', error);
+      console.log('Using fallback MACD data due to network error');
+      return fallbackMACDData;
     }
   }
 }
@@ -117,6 +164,18 @@ const fallbackWatchlistData = {
     ['AAPL', 'Apple Inc.', '150.00', '+1.69%'],
     ['GOOGL', 'Alphabet Inc.', '2800.00', '+0.54%'],
     ['MSFT', 'Microsoft Corporation', '320.00', '+1.59%']
+  ]
+};
+
+const fallbackMACDData = {
+  values: [
+    ['Symbol', 'MACD', 'Signal', 'Histogram'],
+    ['AAPL', '0.5', '0.3', '0.2'],
+    ['GOOGL', '0.2', '0.4', '-0.2'],
+    ['MSFT', '0.8', '0.2', '0.6'],
+    ['TSLA', '-0.3', '0.1', '-0.4'],
+    ['AMZN', '0.4', '0.3', '0.1'],
+    ['META', '1.2', '0.5', '0.7']
   ]
 };
 

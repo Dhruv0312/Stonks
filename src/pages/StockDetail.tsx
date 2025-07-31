@@ -19,7 +19,7 @@ import {
   Gauge,
   BarChart3
 } from 'lucide-react';
-import { useStockData, useTechnicalData } from '@/hooks/useGoogleSheetsStockData';
+import { useStockData, useRSIData, useMACDData } from '@/hooks/useGoogleSheetsStockData';
 
 // Helper function to parse stock data
 const parseStockData = (stock: any) => {
@@ -42,13 +42,16 @@ const StockDetail = () => {
   const navigate = useNavigate();
   
   const { data: allStockData, isLoading: stockLoading, error: stockError } = useStockData();
-  const { data: allTechnicalData, isLoading: technicalLoading, error: technicalError } = useTechnicalData();
+  const { data: allRSIData, isLoading: rsiLoading, error: rsiError } = useRSIData();
+  const { data: allMACDData, isLoading: macdLoading, error: macdError } = useMACDData();
   
   // Filter data for the specific symbol
   const stockData = allStockData && allStockData.length > 1 ? 
     allStockData.slice(1).find((row: any[]) => row[0] === symbol) : null;
-  const technicalData = allTechnicalData && allTechnicalData.length > 1 ? 
-    allTechnicalData.slice(1).find((row: any[]) => row[0] === symbol) : null;
+  const rsiData = allRSIData && allRSIData.length > 1 ? 
+    allRSIData.slice(1).find((row: any[]) => row[0] === symbol) : null;
+  const macdData = allMACDData && allMACDData.length > 1 ? 
+    allMACDData.slice(1).find((row: any[]) => row[0] === symbol) : null;
   
   const parsedStockData = stockData ? parseStockData({
     symbol: stockData[0] || '',
@@ -58,11 +61,11 @@ const StockDetail = () => {
     changePercent: stockData[5] || '0%'
   }) : null;
   
-  const parsedTechnicalData = technicalData ? {
-    rsi: parseFloat(technicalData[1] || "0"),
-    macd: parseFloat(technicalData[2] || "0"),
-    macdSignal: parseFloat(technicalData[3] || "0"),
-    macdHistogram: parseFloat(technicalData[4] || "0")
+  const parsedTechnicalData = rsiData && macdData ? {
+    rsi: parseFloat(rsiData[1] || "0"),
+    macd: parseFloat(macdData[1] || "0"),
+    macdSignal: parseFloat(macdData[2] || "0"),
+    macdHistogram: parseFloat(macdData[3] || "0")
   } : null;
 
   const getChangeIcon = (change: number) => {
@@ -101,7 +104,7 @@ const StockDetail = () => {
     return { signal: "HOLD", color: "text-yellow-500", icon: <Activity className="h-4 w-4" />, reason: "Mixed signals - RSI and MACD disagree" };
   };
 
-  if (stockLoading || technicalLoading) {
+  if (stockLoading || rsiLoading || macdLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

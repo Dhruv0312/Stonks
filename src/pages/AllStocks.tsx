@@ -23,7 +23,7 @@ import {
   Building2,
   Database
 } from 'lucide-react';
-import { useStockData, useTechnicalData } from '@/hooks/useGoogleSheetsStockData';
+import { useStockData, useRSIData, useMACDData } from '@/hooks/useGoogleSheetsStockData';
 
 // Helper function to parse stock data
 const parseStockData = (stock: any) => {
@@ -88,7 +88,8 @@ const AllStocks = () => {
   
   // Get stock data from Google Sheets
   const { data: stockData, isLoading, error } = useStockData();
-  const { data: technicalData, isLoading: technicalLoading } = useTechnicalData();
+  const { data: rsiData, isLoading: rsiLoading } = useRSIData();
+  const { data: macdData, isLoading: macdLoading } = useMACDData();
   
   // Trading recommendation functions
   const getRSIRecommendation = (rsi: number) => {
@@ -132,16 +133,18 @@ const AllStocks = () => {
     
     const parsedData = parseStockData(stock);
     
-    // Find technical data for this stock
-    const techData = technicalData && technicalData.length > 1 ? 
-      technicalData.slice(1).find((techRow: any[]) => techRow[0] === stock.symbol) : null;
+    // Find RSI and MACD data for this stock
+    const rsiDataRow = rsiData && rsiData.length > 1 ? 
+      rsiData.slice(1).find((rsiRow: any[]) => rsiRow[0] === stock.symbol) : null;
+    const macdDataRow = macdData && macdData.length > 1 ? 
+      macdData.slice(1).find((macdRow: any[]) => macdRow[0] === stock.symbol) : null;
     let recommendation = "HOLD";
     
-    if (techData) {
-      const rsi = parseFloat(techData[1] || "0");
-      const macd = parseFloat(techData[2] || "0");
-      const macdSignal = parseFloat(techData[3] || "0");
-      const macdHistogram = parseFloat(techData[4] || "0");
+    if (rsiDataRow && macdDataRow) {
+      const rsi = parseFloat(rsiDataRow[1] || "0");
+      const macd = parseFloat(macdDataRow[1] || "0");
+      const macdSignal = parseFloat(macdDataRow[2] || "0");
+      const macdHistogram = parseFloat(macdDataRow[3] || "0");
       
       recommendation = getOverallRecommendation(rsi, macd, macdSignal, macdHistogram);
     }

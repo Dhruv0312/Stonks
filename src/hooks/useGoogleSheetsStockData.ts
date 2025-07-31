@@ -14,12 +14,25 @@ export const useStockData = () => {
   });
 };
 
-// Hook to fetch technical data from Google Sheets
-export const useTechnicalData = () => {
+// Hook to fetch RSI data from Google Sheets
+export const useRSIData = () => {
   return useQuery({
-    queryKey: ['technicalData'],
+    queryKey: ['rsiData'],
     queryFn: async () => {
       const response = await googleSheetsAPI.getTechnicalData();
+      return response.values || [];
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+  });
+};
+
+// Hook to fetch MACD data from Google Sheets
+export const useMACDData = () => {
+  return useQuery({
+    queryKey: ['macdData'],
+    queryFn: async () => {
+      const response = await googleSheetsAPI.getMACDData();
       return response.values || [];
     },
     staleTime: 30 * 1000, // 30 seconds
