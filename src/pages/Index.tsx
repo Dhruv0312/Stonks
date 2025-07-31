@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useStockData } from '@/hooks/useGoogleSheetsStockData';
-import { TrendingUp, TrendingDown, Search, Activity, Github, Linkedin, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, Github, Linkedin } from "lucide-react";
 import { useEffect } from "react";
 import { CompanyLogoWithFallback } from "@/components/CompanyLogo";
-import { formatPrice, formatChange, formatPercent } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 
 const Index = () => {
   const navigate = useNavigate();
